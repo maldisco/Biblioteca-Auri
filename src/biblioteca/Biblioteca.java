@@ -104,16 +104,16 @@ class MainFrame implements ActionListener{
         
         this.loginButton =  new JButton();
         this.loginButton.setFocusable(false);
-        this.loginButton.setPreferredSize(new Dimension(200, 50));
         this.loginButton.setText("Log in");
         this.loginButton.setBackground(Color.BLACK);   // cor do fundo
         this.loginButton.setForeground(new Color(0x123456));   // cor da fonte
-        this.loginButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        this.loginButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, false));
         this.loginButton.setFont(new Font("Verdana", Font.BOLD, 30));
         this.loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.loginButton.addActionListener(this);
-        c.ipady = 25;
-        c.weighty = 2;
+        
+        c.ipady = 10;
+        c.weighty = 1.5;
         c.gridx = 0;
         c.gridy = 3;
         loginPanel.add(this.loginButton, c);
@@ -131,7 +131,6 @@ class MainFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource()==this.loginButton){
-            System.out.println("Eu");
         }
         
     }
