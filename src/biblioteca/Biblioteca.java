@@ -3,14 +3,13 @@ package biblioteca;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,10 +17,24 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+
 public class Biblioteca {
     
     public static void main(String[] args) {
-       
+        MainFrame mf = new MainFrame();
+        mf.buildLoginScreen();
+    } 
+}
+
+class MainFrame implements ActionListener{
+    JButton loginButton;
+    JFrame auri;
+    
+    MainFrame(){
+        this.auri = new JFrame();   // criação da frame
+    }
+    
+    public void buildLoginScreen(){
         JPanel loginPanel = new JPanel();
         loginPanel.setBackground(new Color(0x123456));
         loginPanel.setBounds(750, 250, 300, 500);
@@ -89,32 +102,37 @@ public class Biblioteca {
         c.gridy = 2;
         loginPanel.add(senha, c);
         
-           
-        JButton loginButton =  new JButton();
-        loginButton.setFocusable(false);
-        loginButton.setPreferredSize(new Dimension(200, 50));
-        loginButton.setText("Log in");
-        loginButton.setBackground(Color.BLACK);   // cor do fundo
-        loginButton.setForeground(new Color(0x123456));   // cor da fonte
-        loginButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        loginButton.setFont(new Font("Verdana", Font.BOLD, 30));
-        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.loginButton =  new JButton();
+        this.loginButton.setFocusable(false);
+        this.loginButton.setPreferredSize(new Dimension(200, 50));
+        this.loginButton.setText("Log in");
+        this.loginButton.setBackground(Color.BLACK);   // cor do fundo
+        this.loginButton.setForeground(new Color(0x123456));   // cor da fonte
+        this.loginButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        this.loginButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        this.loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.loginButton.addActionListener(this);
         c.ipady = 25;
         c.weighty = 2;
         c.gridx = 0;
         c.gridy = 3;
-        loginPanel.add(loginButton, c);
-
+        loginPanel.add(this.loginButton, c);
         
-        JFrame auri = new JFrame();   // criação da frame
-        auri.setTitle("Auri");  // nome da aplicação
-        auri.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    // fechar ao clicar no X
-        auri.setLayout(null);
-        auri.setResizable(false);   // tornar não redimensionável
-        auri.setSize(1800,1000);  // tamanho da frame
-        auri.setVisible(true);  // fazer a frame visível
-        auri.add(loginPanel);
-        auri.getContentPane().setBackground(new Color(0x123456));   // cor do background  
+        this.auri.setTitle("Auri");  // nome da aplicação
+        this.auri.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    // fechar ao clicar no X
+        this.auri.setLayout(null);
+        this.auri.setResizable(false);   // tornar não redimensionável
+        this.auri.setSize(1800,1000);  // tamanho da frame
+        this.auri.add(loginPanel);
+        this.auri.setVisible(true);  // fazer a frame visível
+        this.auri.getContentPane().setBackground(new Color(0x123456));   // cor do background 
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent e){
+        if(e.getSource()==this.loginButton){
+            System.out.println("Eu");
+        }
         
-    } 
+    }
 }
