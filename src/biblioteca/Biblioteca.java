@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
@@ -14,7 +15,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 
@@ -22,22 +25,32 @@ public class Biblioteca {
     
     public static void main(String[] args) {
         MainFrame mf = new MainFrame();
-        mf.buildLoginScreen();
     } 
 }
 
 class MainFrame implements ActionListener{
-    JButton loginButton;
+    JButton loginButton, addLivroButton, emprestimoButton, rmvLivroButton, devolButton, cdstClienteButton, cdstFuncButton;
     JFrame auri;
+    JPanel loginPanel, menuPanel;
+    JTextField login;
+    JPasswordField senha;
     
     MainFrame(){
         this.auri = new JFrame();   // criação da frame
+        auri.setTitle("Auri");  // nome da aplicação
+        auri.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    // fechar ao clicar no X
+        auri.setLayout(null);
+        auri.setResizable(false);   // tornar não redimensionável
+        auri.setSize(1800,1000);  // tamanho da frame
+        this.buildLoginScreen();
+        auri.setVisible(true);  // fazer a frame visível
+        auri.getContentPane().setBackground(new Color(0x123456));   // cor do background 
     }
     
     public void buildLoginScreen(){
-        JPanel loginPanel = new JPanel();
+        this.loginPanel = new JPanel();
         loginPanel.setBackground(new Color(0x123456));
-        loginPanel.setBounds(750, 250, 300, 500);
+        loginPanel.setBounds(0, 0, 1800, 1000);
         loginPanel.setLayout(new GridBagLayout());
         
         GridBagConstraints c = new GridBagConstraints();
@@ -62,7 +75,7 @@ class MainFrame implements ActionListener{
         c.gridy = 0;
         loginPanel.add(label, c);
         
-        JTextField login = new JTextField();   // login textfield
+        this.login = new JTextField();
         login.setPreferredSize(new Dimension(500, 50));
         login.setBackground(new Color(0x123456));   // cor do fundo
         login.setForeground(Color.BLACK);   // cor da fonte
@@ -82,7 +95,8 @@ class MainFrame implements ActionListener{
         c.gridy = 1;
         loginPanel.add(login, c);
         
-        JTextField senha = new JTextField();   // senha textfield
+        this.senha =  new JPasswordField();
+        senha.setEchoChar('*');
         senha.setPreferredSize(new Dimension(500, 50));
         senha.setBackground(new Color(0x123456));   // cor do fundo
         senha.setForeground(Color.BLACK);   // cor da fonte
@@ -102,35 +116,97 @@ class MainFrame implements ActionListener{
         c.gridy = 2;
         loginPanel.add(senha, c);
         
-        this.loginButton =  new JButton();
-        this.loginButton.setFocusable(false);
-        this.loginButton.setText("Log in");
-        this.loginButton.setBackground(Color.BLACK);   // cor do fundo
-        this.loginButton.setForeground(new Color(0x123456));   // cor da fonte
-        this.loginButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, false));
-        this.loginButton.setFont(new Font("Verdana", Font.BOLD, 30));
-        this.loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        this.loginButton.addActionListener(this);
-        
-        c.ipady = 10;
-        c.weighty = 1.5;
+        this.loginButton = new JButton();
+        loginButton.setFocusable(false);
+        loginButton.setText("Log in");
+        loginButton.setBackground(Color.BLACK);   // cor do fundo
+        loginButton.setForeground(new Color(0x123456));   // cor da fonte
+        loginButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3, false));
+        loginButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginButton.addActionListener(this);
+        c.insets = new Insets(20, 5, 0, 0);
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 4;
         loginPanel.add(this.loginButton, c);
         
-        this.auri.setTitle("Auri");  // nome da aplicação
-        this.auri.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    // fechar ao clicar no X
-        this.auri.setLayout(null);
-        this.auri.setResizable(false);   // tornar não redimensionável
-        this.auri.setSize(1800,1000);  // tamanho da frame
-        this.auri.add(loginPanel);
-        this.auri.setVisible(true);  // fazer a frame visível
-        this.auri.getContentPane().setBackground(new Color(0x123456));   // cor do background 
+        auri.add(loginPanel);
+    }
+    
+    public void buildMenuScreen(boolean ehGerente){
+        this.menuPanel = new JPanel();
+        menuPanel.setBackground(new Color(0x123456));
+        menuPanel.setBounds(0, 0, 1800, 1000);
+        menuPanel.setLayout(new GridBagLayout());
+        
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(50, 50, 50, 50);
+        
+        this.addLivroButton = new JButton();
+        addLivroButton.setText("Adicionar Livro");
+        addLivroButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        c.weighty = 1.5;
+        c.gridx = 0;
+        c.gridy = 0;
+        menuPanel.add(addLivroButton, c);
+        
+        this.rmvLivroButton = new JButton();
+        rmvLivroButton.setText("Remover Livro");
+        rmvLivroButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        c.weighty = 1.5;
+        c.gridx = 1;
+        c.gridy = 0;
+        menuPanel.add(rmvLivroButton, c);
+        
+        this.cdstFuncButton = new JButton();
+        cdstFuncButton.setEnabled(ehGerente);
+        cdstFuncButton.setText("Cadastro Funcionário");
+        cdstFuncButton.setFont(new Font("Verdana", Font.BOLD, 30));
+
+        c.weighty = 1.5;
+        c.gridx = 2;
+        c.gridy = 0;
+        menuPanel.add(cdstFuncButton, c);
+        
+        this.emprestimoButton = new JButton();
+        emprestimoButton.setText("Empréstimo");
+        emprestimoButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        c.weighty = 1.5;
+        c.gridx = 0;
+        c.gridy = 1;
+        menuPanel.add(emprestimoButton, c);
+        
+        this.devolButton = new JButton();
+        devolButton.setText("Devolução");
+        devolButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        c.weighty = 1.5;
+        c.gridx = 1;
+        c.gridy = 1;
+        menuPanel.add(devolButton, c);
+        
+        this.cdstClienteButton = new JButton();
+        cdstClienteButton.setText("Cadastro Cliente");
+        cdstClienteButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        c.weighty = 1.5;
+        c.gridx = 2;
+        c.gridy = 1;
+        menuPanel.add(cdstClienteButton, c);
     }
     
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource()==this.loginButton){
+            if(login.getText().equals("07031374170")&&senha.getText().equals("123456")){
+                auri.setVisible(false);
+                this.buildMenuScreen(false);
+                auri.remove(this.loginPanel);
+                auri.add(this.menuPanel);
+                auri.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(auri, "Senha ou login incorretos.");
+            }
+                
         }
         
     }
