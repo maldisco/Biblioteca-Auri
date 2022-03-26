@@ -10,6 +10,8 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -24,7 +26,12 @@ import javax.swing.JTextField;
 public class Biblioteca {
     
     public static void main(String[] args) {
-        MainFrame mf = new MainFrame();
+        Banco bd = new Banco();
+        bd.adicionaLivro("Terra das gemas 1", "Drama", "Haruko Ichikawa", "978-65-85799-88-0", 2014, 192);
+        bd.cadastraCliente("Alexander", "01234512322", "Limgrave", "000001111", "04/05/1967");
+        bd.cadastraFuncionario("Malenia", "07031374170", "Haligtree", "666666666", "04/04/1999", "bladeofmiquella", "Gerente");
+        
+        MainFrame mf = new MainFrame(bd);     
     } 
 }
 
@@ -34,11 +41,19 @@ class MainFrame implements ActionListener{
     JPanel loginPanel, menuPanel;
     JTextField login;
     JPasswordField senha;
+    Banco bd;
     
-    MainFrame(){
+    MainFrame(Banco bd){
+        this.bd=bd;
         this.auri = new JFrame();   // criação da frame
         auri.setTitle("Auri");  // nome da aplicação
-        auri.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    // fechar ao clicar no X
+        auri.addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e){
+                bd.guardaDados();
+                System.exit(0);
+            }
+        });    // fechar ao clicar no X
         auri.setLayout(null);
         auri.setResizable(false);   // tornar não redimensionável
         auri.setSize(1800,1000);  // tamanho da frame
