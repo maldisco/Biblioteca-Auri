@@ -27,11 +27,8 @@ public class Biblioteca {
     
     public static void main(String[] args) {
         Banco bd = new Banco();
-        bd.adicionaLivro("Terra das gemas 1", "Drama", "Haruko Ichikawa", "978-65-85799-88-0", 2014, 192);
-        bd.cadastraCliente("Alexander", "01234512322", "Limgrave", "000001111", "04/05/1967");
-        bd.cadastraFuncionario("Malenia", "07031374170", "Haligtree", "666666666", "04/04/1999", "bladeofmiquella", "Gerente");
-        
         MainFrame mf = new MainFrame(bd);     
+        
     } 
 }
 

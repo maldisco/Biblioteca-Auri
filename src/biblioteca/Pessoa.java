@@ -14,6 +14,10 @@ public class Pessoa {
         this.celular=celular;
         this.dataNascimento=dataNascimento;
     }
+    
+    public String getCPF(){
+        return this.cpf;
+    }
 }
 
 class Funcionario extends Pessoa {
@@ -25,6 +29,7 @@ class Funcionario extends Pessoa {
         this.cargo=cargo;
     }
     
+    @Override
     public String toString(){
         return String.join(",", this.nome, this.cpf, this.endereco, this.celular, this.dataNascimento, this.senha, this.cargo);
     }

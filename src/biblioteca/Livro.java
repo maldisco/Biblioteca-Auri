@@ -28,4 +28,8 @@ public class Livro {
     public String toString(){
         return String.join(",", titulo, genero, autor, ISBN, Integer.toString(anoPublicacao), Integer.toString(qtdPaginas), Boolean.toString(emprestado));
     }
+    
+    public String getISBN(){
+        return this.ISBN;
+    }
 }
