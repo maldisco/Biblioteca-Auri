@@ -1,1 +1,2 @@
-Malenia,07031374170,Haligtree,666666666,04/04/1999,bladeofmiquella,Gerente
+Malenia,07031374170,Haligtree,99113-7450,04/04/1999,123456,Recepcionista
+Satanya,1,Limgrave,99113-7450,30/02/2022,2,Gerente

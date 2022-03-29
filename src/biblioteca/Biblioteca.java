@@ -27,6 +27,7 @@ public class Biblioteca {
     
     public static void main(String[] args) {
         Banco bd = new Banco();
+        bd.carregaDados();
         MainFrame mf = new MainFrame(bd);     
         
     } 
@@ -35,7 +36,7 @@ public class Biblioteca {
 class MainFrame implements ActionListener{
     JButton loginButton, addLivroButton, emprestimoButton, rmvLivroButton, devolButton, cdstClienteButton, cdstFuncButton;
     JFrame auri;
-    JPanel loginPanel, menuPanel;
+    JPanel loginPanel, menuPanel, addPanel;
     JTextField login;
     JPasswordField senha;
     Banco bd;
@@ -158,6 +159,7 @@ class MainFrame implements ActionListener{
         this.addLivroButton = new JButton();
         addLivroButton.setText("Adicionar Livro");
         addLivroButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        addLivroButton.addActionListener(this);
         c.weighty = 1.5;
         c.gridx = 0;
         c.gridy = 0;
@@ -206,6 +208,23 @@ class MainFrame implements ActionListener{
         menuPanel.add(cdstClienteButton, c);
     }
     
+    public void buildAddScreen(){
+        this.addPanel =  new JPanel();
+        addPanel.setBackground(new Color(0x123456));
+        addPanel.setBounds(0, 0, 1800, 1000);
+        addPanel.setLayout(new GridBagLayout());
+        
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        
+        JLabel titulo = new JLabel();
+        titulo.setFont(new Font("Arial", Font.PLAIN, 40));
+        titulo.setSize(400, 40);
+        c.gridx = 0;
+        c.gridy = 0;
+        addPanel.add(titulo, c);
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource()==this.loginButton){
@@ -219,6 +238,12 @@ class MainFrame implements ActionListener{
                 JOptionPane.showMessageDialog(auri, "Senha ou login incorretos.");
             }
                 
+        } else if(e.getSource()==this.addLivroButton){
+            auri.setVisible(false);
+            this.buildAddScreen();
+            auri.remove(this.menuPanel);
+            auri.add(this.addPanel);
+            auri.setVisible(true);
         }
         
     }

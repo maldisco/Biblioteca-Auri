@@ -40,7 +40,7 @@ public class Banco {
     }
         
     public boolean adicionaLivro(String titulo, String genero, String autor, String ISBN, int anoPublicacao, int qtdPaginas){
-        if(Banco.getLivro(livros, ISBN)==null)
+        if(Banco.getLivro(livros, ISBN)!=null)
             return false;
         Livro l = new Livro(titulo, autor, genero, ISBN, anoPublicacao, qtdPaginas);
         this.livros.add(l);
@@ -63,6 +63,20 @@ public class Banco {
     public void cadastraFuncionario(String nome, String cpf, String endereco, String celular, String dataNascimento, String senha, String cargo){
         Funcionario f = new Funcionario(nome, cpf, endereco, celular, dataNascimento, senha, cargo);
         this.funcionarios.add(f);
+    }
+    
+    public void mostraDados(){
+        for(Funcionario f: this.funcionarios){
+            System.out.println(f.toString());
+        }
+        
+        for(Livro l: this.livros){
+            System.out.println(l.toString());
+        }
+        
+        for(Cliente c: this.clientes){
+            System.out.println(c.toString());
+        }
     }
     
     public void carregaDados(){
@@ -120,24 +134,24 @@ public class Banco {
             FileWriter emprestimos =  new FileWriter("data/emprestimos.txt");            
             
             for(Funcionario f: this.funcionarios){
-                funcs.write(f.toString());
-                funcs.close();
+                funcs.write(f.toString()+"\n");
             }
+            funcs.close();
             
             for(Cliente c: this.clientes){
-                cli.write(c.toString());
-                cli.close();
+                cli.write(c.toString()+"\n");
             }
+            cli.close();
             
             for(Livro l: this.livros){
-                acervo.write(l.toString());
-                acervo.close();
+                acervo.write(l.toString()+"\n");
             }
+            acervo.close();
             
             for(Emprestimo e: this.historico){
-                emprestimos.write(e.toString());
-                emprestimos.close();
+                emprestimos.write(e.toString()+"\n");
             }
+            emprestimos.close();
             
         } catch (IOException ex) {
             Logger.getLogger(Banco.class.getName()).log(Level.SEVERE, null, ex);
