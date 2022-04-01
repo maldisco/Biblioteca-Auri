@@ -34,12 +34,13 @@ public class Biblioteca {
 }
 
 class MainFrame implements ActionListener{
-    JButton loginButton, addLivroButton, emprestimoButton, rmvLivroButton, devolButton, cdstClienteButton, cdstFuncButton;
+    JButton loginButton, confirmaAddButton, cancelaButton, addLivroButton, emprestimoButton, rmvLivroButton, devolButton, cdstClienteButton, cdstFuncButton;
     JFrame auri;
     JPanel loginPanel, menuPanel, addPanel;
-    JTextField login;
+    JTextField login, inputTitulo, inputGenero, inputAutor, inputISBN, inputQtd, inputAno;
     JPasswordField senha;
     Banco bd;
+    Funcionario funcionarioAtual;
     
     MainFrame(Banco bd){
         this.bd=bd;
@@ -96,7 +97,7 @@ class MainFrame implements ActionListener{
         login.setBorder(javax.swing.BorderFactory.createCompoundBorder(
         javax.swing.BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(Color.BLACK, 3, true),
-            "CPF",
+            "Usuário",
             javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
             javax.swing.border.TitledBorder.DEFAULT_POSITION,
             new java.awt.Font("Verdana", 1, 15),
@@ -215,27 +216,133 @@ class MainFrame implements ActionListener{
         addPanel.setLayout(new GridBagLayout());
         
         GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
+        c.fill = GridBagConstraints.BOTH;
+        c.insets = new Insets(30,20,30,20);
         
-        JLabel titulo = new JLabel();
-        titulo.setFont(new Font("Arial", Font.PLAIN, 40));
-        titulo.setSize(400, 40);
+        JLabel label = new JLabel();
+        label.setText("Título");
+        label.setFont(new Font("Arial", Font.PLAIN, 30));
+        label.setForeground(Color.BLACK);
         c.gridx = 0;
-        c.gridy = 0;
-        addPanel.add(titulo, c);
+        c.gridy = 1;
+        addPanel.add(label, c);
+        
+        inputTitulo = new JTextField();
+        inputTitulo.setFont(new Font("Arial", Font.PLAIN, 20));
+        inputTitulo.setPreferredSize(new Dimension(500, 50));
+        c.gridx = 1;
+        c.gridy = 1;
+        addPanel.add(inputTitulo, c);
+        
+        label = new JLabel();
+        label.setText("Autor");
+        label.setFont(new Font("Arial", Font.PLAIN, 30));
+        label.setForeground(Color.BLACK);
+        c.gridx = 0;
+        c.gridy = 2;
+        addPanel.add(label, c);
+        
+        inputAutor = new JTextField();
+        inputAutor.setFont(new Font("Arial", Font.PLAIN, 20));
+        inputAutor.setPreferredSize(new Dimension(300, 50));
+        c.gridx = 1;
+        c.gridy = 2;
+        addPanel.add(inputAutor, c);
+        
+        label = new JLabel();
+        label.setText("Gênero");
+        label.setFont(new Font("Arial", Font.PLAIN, 30));
+        label.setForeground(Color.BLACK);
+        c.gridx = 0;
+        c.gridy = 3;
+        addPanel.add(label, c);
+        
+        inputGenero = new JTextField();
+        inputGenero.setFont(new Font("Arial", Font.PLAIN, 20));
+        inputGenero.setPreferredSize(new Dimension(300, 50));
+        c.gridx = 1;
+        c.gridy = 3;
+        addPanel.add(inputGenero, c);
+        
+        label = new JLabel();
+        label.setText("Ano de publicação");
+        label.setFont(new Font("Arial", Font.PLAIN, 30));
+        label.setForeground(Color.BLACK);
+        c.gridx = 0;
+        c.gridy = 4;
+        addPanel.add(label, c);
+        
+        inputAno = new JTextField();
+        inputAno.setFont(new Font("Arial", Font.PLAIN, 20));
+        inputAno.setPreferredSize(new Dimension(300, 50));
+        c.gridx = 1;
+        c.gridy = 4;
+        addPanel.add(inputAno, c);
+        
+        label = new JLabel();
+        label.setText("Quantidade de páginas");
+        label.setFont(new Font("Arial", Font.PLAIN, 30));
+        label.setForeground(Color.BLACK);
+        c.gridx = 0;
+        c.gridy = 5;
+        addPanel.add(label, c);
+        
+        inputQtd = new JTextField();
+        inputQtd.setFont(new Font("Arial", Font.PLAIN, 20));
+        inputQtd.setPreferredSize(new Dimension(300, 50));
+        c.gridx = 1;
+        c.gridy = 5;
+        addPanel.add(inputQtd, c);
+        
+        label = new JLabel();
+        label.setText("ISBN");
+        label.setFont(new Font("Arial", Font.PLAIN, 30));
+        label.setForeground(Color.BLACK);
+        c.gridx = 0;
+        c.gridy = 6;
+        addPanel.add(label, c);
+        
+        inputISBN = new JTextField();
+        inputISBN.setFont(new Font("Arial", Font.PLAIN, 20));
+        inputISBN.setPreferredSize(new Dimension(300, 50));
+        c.gridx = 1;
+        c.gridy = 6;
+        addPanel.add(inputISBN, c);
+        
+        confirmaAddButton = new JButton();
+        confirmaAddButton.setText("Confirmar");
+        confirmaAddButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        confirmaAddButton.addActionListener(this);
+        c.gridx = 0;
+        c.gridy = 7;
+        addPanel.add(confirmaAddButton, c);
+        
+        this.cancelaButton = new JButton();
+        cancelaButton.setText("Cancelar");
+        cancelaButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        cancelaButton.addActionListener(this);
+        c.gridx = 1;
+        c.gridy = 7;
+        addPanel.add(cancelaButton, c);
     }
-    
+        
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource()==this.loginButton){
-            if(login.getText().equals("07031374170")&&senha.getText().equals("123456")){
-                auri.setVisible(false);
-                this.buildMenuScreen(false);
-                auri.remove(this.loginPanel);
-                auri.add(this.menuPanel);
-                auri.setVisible(true);
+            Funcionario f = Banco.getFuncionario(login.getText());
+            if(f != null){
+                if(f.validar(senha.getText())){
+                    this.funcionarioAtual = f;
+                    auri.setVisible(false);
+                    this.buildMenuScreen(funcionarioAtual.ehGerente());
+                    auri.remove(this.loginPanel);
+                    auri.add(this.menuPanel);
+                    auri.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(auri, "Senha incorreta.");
+                }
             } else {
-                JOptionPane.showMessageDialog(auri, "Senha ou login incorretos.");
+                JOptionPane.showMessageDialog(auri, "Usuário não encontrado.");
             }
                 
         } else if(e.getSource()==this.addLivroButton){
@@ -244,6 +351,30 @@ class MainFrame implements ActionListener{
             auri.remove(this.menuPanel);
             auri.add(this.addPanel);
             auri.setVisible(true);
+        } else if(e.getSource()==this.cancelaButton){
+            auri.setVisible(false);
+            this.buildMenuScreen(funcionarioAtual.ehGerente());
+            auri.remove(this.addPanel);
+            auri.add(this.menuPanel);
+            auri.setVisible(true);
+        } else if(e.getSource()==this.confirmaAddButton){
+            String titulo = inputTitulo.getText();
+            String genero = inputGenero.getText();
+            String autor = inputAutor.getText();
+            String ISBN = inputISBN.getText();
+            int ano =  Integer.parseInt(inputAno.getText());
+            int qtd =  Integer.parseInt(inputQtd.getText());
+            boolean resultado = bd.adicionaLivro(titulo, genero, autor, ISBN, ano, qtd);
+            if(resultado){
+                JOptionPane.showMessageDialog(auri, "Livro adicionado ao acervo.");
+                auri.setVisible(false);
+                this.buildMenuScreen(funcionarioAtual.ehGerente());
+                auri.remove(this.addPanel);
+                auri.add(this.menuPanel);
+                auri.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(auri, "Livro já se encontra no acervo.");
+            }
         }
         
     }

@@ -33,6 +33,14 @@ class Funcionario extends Pessoa {
     public String toString(){
         return String.join(",", this.nome, this.cpf, this.endereco, this.celular, this.dataNascimento, this.senha, this.cargo);
     }
+    
+    public boolean validar(String senha){
+        return this.senha.equals(senha);
+    }
+    
+    public boolean ehGerente(){
+        return this.cargo.equals("Gerente");
+    }
 }
 
 class Cliente extends Pessoa {

@@ -11,70 +11,70 @@ import java.util.stream.Collectors;
 
 
 public class Banco {
-    private final List<Emprestimo> historico;
-    private final List<Livro> livros;
-    private final List<Cliente> clientes;
-    private final List<Funcionario> funcionarios;
+    private static List<Emprestimo> historico;
+    private static List<Livro> livros;
+    private static List<Cliente> clientes;
+    private static List<Funcionario> funcionarios;
     
     public Banco(){
-        this.historico = new ArrayList<>();
-        this.livros = new ArrayList<>();
-        this.clientes = new ArrayList<>();
-        this.funcionarios = new ArrayList<>();
+        Banco.historico = new ArrayList<>();
+        Banco.livros = new ArrayList<>();
+        Banco.clientes = new ArrayList<>();
+        Banco.funcionarios = new ArrayList<>();
     }
         
-    public static Livro getLivro (List<Livro> l, String ISBN) {
-        return l.stream().filter(livro -> ISBN.equals(livro.getISBN())).findFirst().orElse(null);
+    public static Livro getLivro (String ISBN) {
+        return livros.stream().filter(livro -> ISBN.equals(livro.getISBN())).findFirst().orElse(null);
     }
     
-    public static Cliente getCliente (List<Cliente> c, String CPF) {
-        return c.stream().filter(cliente -> CPF.equals(cliente.getCPF())).findFirst().orElse(null);
+    public static Cliente getCliente (String CPF) {
+        return clientes.stream().filter(cliente -> CPF.equals(cliente.getCPF())).findFirst().orElse(null);
     }
     
-    public static Funcionario getFuncionario (List<Funcionario> f, String CPF) {
-        return f.stream().filter(func -> CPF.equals(func.getCPF())).findFirst().orElse(null);
+    public static Funcionario getFuncionario (String CPF) {
+        return funcionarios.stream().filter(func -> CPF.equals(func.getCPF())).findFirst().orElse(null);
     }
     
-    public static List<Emprestimo> emprestimosEmAberto(List<Emprestimo> e){
-        return e.stream().filter(emprestimo -> emprestimo.devolvido==false).collect(Collectors.toList());
+    public static List<Emprestimo> emprestimosEmAberto(){
+        return historico.stream().filter(emprestimo -> emprestimo.devolvido==false).collect(Collectors.toList());
     }
         
     public boolean adicionaLivro(String titulo, String genero, String autor, String ISBN, int anoPublicacao, int qtdPaginas){
-        if(Banco.getLivro(livros, ISBN)!=null)
+        if(Banco.getLivro(ISBN)!=null)
             return false;
         Livro l = new Livro(titulo, autor, genero, ISBN, anoPublicacao, qtdPaginas);
-        this.livros.add(l);
+        livros.add(l);
         return true;
     }
     
     public boolean removeLivro(String ISBN){
-        Livro l = Banco.getLivro(this.livros, ISBN);
+        Livro l = Banco.getLivro(ISBN);
         if(l==null)
             return false;
-        this.livros.remove(l);
+        livros.remove(l);
         return true;          
     }
         
     public void cadastraCliente(String nome, String cpf, String endereco, String celular, String dataNascimento){
         Cliente c = new Cliente(nome, cpf, endereco, celular, dataNascimento);
-        this.clientes.add(c);
+        clientes.add(c);
     }
     
     public void cadastraFuncionario(String nome, String cpf, String endereco, String celular, String dataNascimento, String senha, String cargo){
         Funcionario f = new Funcionario(nome, cpf, endereco, celular, dataNascimento, senha, cargo);
-        this.funcionarios.add(f);
+        funcionarios.add(f);
     }
     
     public void mostraDados(){
-        for(Funcionario f: this.funcionarios){
+        for(Funcionario f: funcionarios){
             System.out.println(f.toString());
         }
         
-        for(Livro l: this.livros){
+        for(Livro l: livros){
             System.out.println(l.toString());
         }
         
-        for(Cliente c: this.clientes){
+        for(Cliente c: clientes){
             System.out.println(c.toString());
         }
     }
@@ -94,19 +94,19 @@ public class Banco {
             while(reader.hasNextLine()){
                 String data[] = reader.nextLine().split(",");
                 Funcionario f = new Funcionario(data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
-                this.funcionarios.add(f);
+                funcionarios.add(f);
             }
             
             while(reader2.hasNextLine()){
                 String data[] = reader2.nextLine().split(",");
                 Cliente c = new Cliente(data[0], data[1], data[2], data[3], data[4], Boolean.parseBoolean(data[5]), Integer.parseInt(data[6]));
-                this.clientes.add(c);
+                clientes.add(c);
             }
             
             while(reader3.hasNextLine()){
                 String data[] = reader3.nextLine().split(",");
                 Livro l = new Livro(data[0], data[1], data[2], data[3], Integer.parseInt(data[4]), Integer.parseInt(data[5]), Boolean.parseBoolean(data[6]));
-                this.livros.add(l);
+                livros.add(l);
             }
             
             while(reader4.hasNextLine()){
@@ -114,11 +114,11 @@ public class Banco {
                 String livros[] = data[3].split("/");
                 List<Livro> l = new ArrayList<Livro>();
                 for(String isbn: livros){
-                    l.add(Banco.getLivro(this.livros, isbn));
+                    l.add(Banco.getLivro(isbn));
                 }
                 
                 Emprestimo e = new Emprestimo(Boolean.parseBoolean(data[0]), data[1], data[2], l, Float.parseFloat(data[4]), data[5]);    
-                this.historico.add(e);
+                historico.add(e);
             }
              
         } catch (FileNotFoundException ex) {
@@ -133,22 +133,22 @@ public class Banco {
             FileWriter acervo = new FileWriter("data/livros.txt");
             FileWriter emprestimos =  new FileWriter("data/emprestimos.txt");            
             
-            for(Funcionario f: this.funcionarios){
+            for(Funcionario f: funcionarios){
                 funcs.write(f.toString()+"\n");
             }
             funcs.close();
             
-            for(Cliente c: this.clientes){
+            for(Cliente c: clientes){
                 cli.write(c.toString()+"\n");
             }
             cli.close();
             
-            for(Livro l: this.livros){
+            for(Livro l: livros){
                 acervo.write(l.toString()+"\n");
             }
             acervo.close();
             
-            for(Emprestimo e: this.historico){
+            for(Emprestimo e: historico){
                 emprestimos.write(e.toString()+"\n");
             }
             emprestimos.close();
