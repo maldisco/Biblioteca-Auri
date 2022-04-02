@@ -9,62 +9,128 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-
+/**
+ * Utilizada para gerenciar o banco de dados.
+ */
 public class Banco {
-    private static List<Emprestimo> historico;
-    private static List<Livro> livros;
-    private static List<Cliente> clientes;
-    private static List<Funcionario> funcionarios;
+    private final List<Emprestimo> historico;
+    private final List<Livro> livros;
+    private final List<Cliente> clientes;
+    private final List<Funcionario> funcionarios;
     
     public Banco(){
-        Banco.historico = new ArrayList<>();
-        Banco.livros = new ArrayList<>();
-        Banco.clientes = new ArrayList<>();
-        Banco.funcionarios = new ArrayList<>();
+        historico = new ArrayList<>();
+        livros = new ArrayList<>();
+        clientes = new ArrayList<>();
+        funcionarios = new ArrayList<>();
     }
-        
-    public static Livro getLivro (String ISBN) {
+    
+    /**
+     * Encontra um livro a partir do seu código ISBN
+     * @param ISBN
+     * @return Livro
+     */
+    public Livro getLivro (String ISBN) {
         return livros.stream().filter(livro -> ISBN.equals(livro.getISBN())).findFirst().orElse(null);
     }
     
-    public static Cliente getCliente (String CPF) {
+    /**
+     * Encontra um cliente a partir do seu CPF
+     * @param CPF
+     * @return Cliente
+     */
+    public Cliente getCliente (String CPF) {
         return clientes.stream().filter(cliente -> CPF.equals(cliente.getCPF())).findFirst().orElse(null);
     }
     
-    public static Funcionario getFuncionario (String CPF) {
+    /**
+     * Encontra um funcionário a partir do seu CPF
+     * @param CPF
+     * @return Funcionario
+     */
+    public Funcionario getFuncionario (String CPF) {
         return funcionarios.stream().filter(func -> CPF.equals(func.getCPF())).findFirst().orElse(null);
     }
     
-    public static List<Emprestimo> emprestimosEmAberto(){
+    /**
+     * Encontra todos os empréstimos ainda em aberto
+     * @return List
+     */
+    public List<Emprestimo> emprestimosEmAberto(){
         return historico.stream().filter(emprestimo -> emprestimo.devolvido==false).collect(Collectors.toList());
     }
         
-    public boolean adicionaLivro(String titulo, String genero, String autor, String ISBN, int anoPublicacao, int qtdPaginas){
-        if(Banco.getLivro(ISBN)!=null)
+    /**
+     * Adiciona um livro ao acervo, caso ele ainda não esteja.
+     * @param titulo
+     * @param genero
+     * @param autor
+     * @param ISBN
+     * @param anoPublicacao
+     * @param qtdPaginas
+     * @return boolean (sucesso ou falha)
+     */
+    public boolean adicionaLivro(String titulo, String genero, String autor, String ISBN, int anoPublicacao){
+        if(getLivro(ISBN)!=null)
             return false;
-        Livro l = new Livro(titulo, autor, genero, ISBN, anoPublicacao, qtdPaginas);
+        Livro l = new Livro(titulo, autor, genero, ISBN, anoPublicacao);
         livros.add(l);
         return true;
     }
     
+    /**
+     * Remove um livro do acervo, caso ele esteja
+     * @param ISBN
+     * @return boolean (sucesso ou falha)
+     */
     public boolean removeLivro(String ISBN){
-        Livro l = Banco.getLivro(ISBN);
+        Livro l = getLivro(ISBN);
         if(l==null)
             return false;
         livros.remove(l);
         return true;          
     }
-        
-    public void cadastraCliente(String nome, String cpf, String endereco, String celular, String dataNascimento){
+    
+    /**
+     * Cadastra um cliente no banco, caso não esteja cadastrado
+     * @param nome
+     * @param cpf
+     * @param endereco
+     * @param celular
+     * @param dataNascimento 
+     * @return boolean (sucesso ou falha)
+     */
+    public boolean cadastraCliente(String nome, String cpf, String endereco, String celular, String dataNascimento){
+        if(getCliente(cpf)!= null)
+            return false;
         Cliente c = new Cliente(nome, cpf, endereco, celular, dataNascimento);
         clientes.add(c);
+        return true;
     }
     
-    public void cadastraFuncionario(String nome, String cpf, String endereco, String celular, String dataNascimento, String senha, String cargo){
+    /**
+     * Cadastra um funcionário no banco, caso não esteja cadastrado
+     * @param nome
+     * @param cpf
+     * @param endereco
+     * @param celular
+     * @param dataNascimento
+     * @param senha
+     * @param cargo 
+     * @return boolean (sucesso ou falha)
+     */
+    public boolean cadastraFuncionario(String nome, String cpf, String endereco, String celular, String dataNascimento, String senha, String cargo){
+        if(getFuncionario(cpf)!=null)
+            return false;
         Funcionario f = new Funcionario(nome, cpf, endereco, celular, dataNascimento, senha, cargo);
         funcionarios.add(f);
+        return true;
     }
     
+    /**
+     * método de teste (checar se os dados estão sendo carregados corretamente
+     * EXCLUIR
+     */
     public void mostraDados(){
         for(Funcionario f: funcionarios){
             System.out.println(f.toString());
@@ -79,6 +145,9 @@ public class Banco {
         }
     }
     
+    /**
+     * Carrega os dados dos arquivos para a memória do programa
+     */
     public void carregaDados(){
         File funcs =  new File("data/funcionarios.txt");
         File cli = new File("data/clientes.txt");
@@ -105,16 +174,16 @@ public class Banco {
             
             while(reader3.hasNextLine()){
                 String data[] = reader3.nextLine().split(",");
-                Livro l = new Livro(data[0], data[1], data[2], data[3], Integer.parseInt(data[4]), Integer.parseInt(data[5]), Boolean.parseBoolean(data[6]));
+                Livro l = new Livro(data[0], data[1], data[2], data[3], Integer.parseInt(data[4]), Boolean.parseBoolean(data[5]));
                 livros.add(l);
             }
             
             while(reader4.hasNextLine()){
                 String data[] =  reader4.nextLine().split(",");
-                String livros[] = data[3].split("/");
-                List<Livro> l = new ArrayList<Livro>();
-                for(String isbn: livros){
-                    l.add(Banco.getLivro(isbn));
+                String ISBNs[] = data[3].split("/");
+                List<Livro> l = new ArrayList<>();
+                for(String isbn: ISBNs){
+                    l.add(getLivro(isbn));
                 }
                 
                 Emprestimo e = new Emprestimo(Boolean.parseBoolean(data[0]), data[1], data[2], l, Float.parseFloat(data[4]), data[5]);    
@@ -126,6 +195,9 @@ public class Banco {
         }
     }
     
+    /**
+     * Guarda os dados da memória do programa para os arquivos.
+     */
     public void guardaDados(){
         try {
             FileWriter funcs =  new FileWriter("data/funcionarios.txt");

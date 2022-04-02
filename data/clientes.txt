@@ -1,2 +1,3 @@
 Tarnished,00000000000,Lands Between,12345-6789,28/02/2022,false,0
 Melina,00000000001,Unknown,22345-6789,28/02/2022,false,0
+Radahn,12312332145,Redmane Castle,55211-9875,28/02/2022,false,0
