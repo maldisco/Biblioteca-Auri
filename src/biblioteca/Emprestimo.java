@@ -5,31 +5,24 @@ import java.util.*;
 
 public class Emprestimo {
     protected boolean devolvido=false;
-    protected String cpfFuncionario, cpfCliente;
+    protected Funcionario funcionario;
+    protected Cliente cliente;
     protected List<Livro> livros;
     protected float total;
     protected LocalDate data;
-    
-    public Emprestimo(String cpfFunc, String cpfCli){
-        this.cpfFuncionario = cpfFunc;
-        this.cpfCliente = cpfCli;
-        this.data=LocalDate.now();
-        this.livros=new ArrayList<>();
-        this.total=0;
-    }
-    
-    public Emprestimo(String cpfFunc, String cpfCli, List<Livro> livros){
-        this.cpfFuncionario = cpfFunc;
-        this.cpfCliente = cpfCli;
+        
+    public Emprestimo(Funcionario func, Cliente cli, List<Livro> livros){
+        this.funcionario = func;
+        this.cliente = cli;
         this.data=LocalDate.now();
         this.livros=livros;
         this.total=0;
     }
     
-    public Emprestimo(boolean devolvido, String cpfFunc, String cpfCli, List<Livro> livros, float total, String data){
+    public Emprestimo(boolean devolvido, Funcionario func, Cliente cli, List<Livro> livros, float total, String data){
         this.devolvido = devolvido;
-        this.cpfFuncionario = cpfFunc;
-        this.cpfCliente = cpfCli;
+        this.funcionario = func;
+        this.cliente = cli;
         this.data = LocalDate.parse(data);
         this.livros = livros;
         this.total = total;
@@ -60,6 +53,6 @@ public class Emprestimo {
         }
         String isbn = String.join("/", listaIsbn);
         
-        return String.join(",", Boolean.toString(devolvido), cpfFuncionario, cpfCliente, isbn, Float.toString(total), data.toString());
+        return String.join(",", Boolean.toString(devolvido), funcionario.getCPF(), cliente.getCPF(), isbn, Float.toString(total), data.toString());
     }
 }

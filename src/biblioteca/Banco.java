@@ -128,6 +128,22 @@ public class Banco {
     }
     
     /**
+     * Registra um novo empréstimo
+     * @param funcionario
+     * @param cpf
+     * @param livros
+     * @return boolean (sucesso ou falha)
+     */
+    public boolean novoEmprestimo(Funcionario funcionario, String cpf, List<Livro> livros){
+        if(getCliente(cpf)==null)
+            return false;
+        Cliente c = getCliente(cpf);
+        Emprestimo e = new Emprestimo(funcionario, c, livros);
+        historico.add(e);
+        return true;
+    }
+    
+    /**
      * método de teste (checar se os dados estão sendo carregados corretamente
      * EXCLUIR
      */
@@ -186,7 +202,7 @@ public class Banco {
                     l.add(getLivro(isbn));
                 }
                 
-                Emprestimo e = new Emprestimo(Boolean.parseBoolean(data[0]), data[1], data[2], l, Float.parseFloat(data[4]), data[5]);    
+                Emprestimo e = new Emprestimo(Boolean.parseBoolean(data[0]), this.getFuncionario(data[1]), this.getCliente(data[2]), l, Float.parseFloat(data[4]), data[5]);    
                 historico.add(e);
             }
              

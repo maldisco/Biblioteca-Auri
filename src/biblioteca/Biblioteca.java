@@ -16,18 +16,20 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.text.DateFormatter;
 import javax.swing.text.NumberFormatter;
 
 /**
@@ -47,10 +49,14 @@ public class Biblioteca {
  * Classe utilizada para implementar a interface gráfica
  */
 class MainFrame implements ActionListener{
-    private JButton loginButton, confirmaAddButton, confirmaCdstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, rmvLivroButton, devolButton, cdstClienteButton, cdstFuncButton;
+    private JButton loginButton, confirmaAddButton, confirmaCdstButton, confirmaEmprstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, rmvLivroButton,
+            cdstClienteButton, cdstFuncButton;
     private final JFrame auri;
-    private JPanel loginPanel, menuPanel, addPanel, cdstClientePanel, cdstFuncPanel;
-    private JTextField login, inputTitulo, inputGenero, inputAutor, inputISBN, inputQtd, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo;
+    private JLabel logo;
+    private JList emprestimosAbertos;
+    private JPanel loginPanel, menuPanel, addPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
+    private JTextField login, inputTitulo, inputGenero, inputAutor, inputISBN, inputQtd, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo, inputLivro1,
+            inputLivro2, inputLivro3, inputLivro4, inputLivro5, inputDuracao;
     private JPasswordField senha;
     private final Banco bd;
     private Funcionario funcionarioAtual;
@@ -80,7 +86,7 @@ class MainFrame implements ActionListener{
     }
     
     /**
-     * Constrói a página de menu
+     * Constrói a página de login
      */
     public void buildLoginScreen(){
         // Painel de login
@@ -98,19 +104,19 @@ class MainFrame implements ActionListener{
         Image newMoon = moon.getImage(); 
         Image resizedMoon = newMoon.getScaledInstance(180, 180, java.awt.Image.SCALE_SMOOTH);
         moon = new ImageIcon(resizedMoon);
-        JLabel label = new JLabel();
-        label.setText("Biblioteca Auri");
-        label.setIcon(moon);
-        label.setHorizontalTextPosition(JLabel.CENTER); // LEFT, CENTER, RIGHT
-        label.setVerticalTextPosition(JLabel.BOTTOM); // TOP, CENTER, BOTTOM
-        label.setForeground(Color.BLACK);
-        label.setIconTextGap(25); // espaço entre texto e icone
-        label.setFont(new Font("Arial", Font.BOLD, 40));
-        label.setVerticalAlignment(JLabel.CENTER); // posição vertical
-        label.setHorizontalAlignment(JLabel.CENTER); // posição horizontal
+        this.logo = new JLabel();
+        logo.setText("Biblioteca Auri");
+        logo.setIcon(moon);
+        logo.setHorizontalTextPosition(JLabel.CENTER); // LEFT, CENTER, RIGHT
+        logo.setVerticalTextPosition(JLabel.BOTTOM); // TOP, CENTER, BOTTOM
+        logo.setForeground(Color.BLACK);
+        logo.setIconTextGap(25); // espaço entre texto e icone
+        logo.setFont(new Font("Arial", Font.BOLD, 40));
+        logo.setVerticalAlignment(JLabel.CENTER); // posição vertical
+        logo.setHorizontalAlignment(JLabel.CENTER); // posição horizontal
         c.gridx = 0;
         c.gridy = 0;
-        loginPanel.add(label, c);
+        loginPanel.add(logo, c);
         
         // Campo de usuário
         this.login = new JTextField();
@@ -175,7 +181,7 @@ class MainFrame implements ActionListener{
      * Constrói a janela de Menu, bloqueia algumas funções caso usuário não seja gerente
      * @param ehGerente 
      */
-    public void buildMenuScreen(boolean ehGerente){
+    public void buildMenuScreen(boolean ehGerente){        
         // Painel de menu
         this.menuPanel = new JPanel();
         menuPanel.setBackground(new Color(0x123456));
@@ -185,13 +191,14 @@ class MainFrame implements ActionListener{
         // Parametros de layout
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.insets = new Insets(50, 50, 50, 50);
-        
+        c.insets = new Insets(20, 50, 20, 50);
+                
         // Botão adicionar livro
         this.addLivroButton = new JButton();
         addLivroButton.setText("Adicionar Livro");
-        addLivroButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        addLivroButton.setFont(new Font("Verdana", Font.BOLD, 20));
         addLivroButton.addActionListener(this);
+        c.weightx = 1;
         c.weighty = 1.5;
         c.gridx = 0;
         c.gridy = 0;
@@ -200,7 +207,7 @@ class MainFrame implements ActionListener{
         // Botão remover livro
         this.rmvLivroButton = new JButton();
         rmvLivroButton.setText("Remover Livro");
-        rmvLivroButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        rmvLivroButton.setFont(new Font("Verdana", Font.BOLD, 20));
         c.weighty = 1.5;
         c.gridx = 1;
         c.gridy = 0;
@@ -210,7 +217,7 @@ class MainFrame implements ActionListener{
         this.cdstFuncButton = new JButton();
         cdstFuncButton.setEnabled(ehGerente);
         cdstFuncButton.setText("Cadastro Funcionário");
-        cdstFuncButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        cdstFuncButton.setFont(new Font("Verdana", Font.BOLD, 20));
         cdstFuncButton.addActionListener(this);
         c.weighty = 1.5;
         c.gridx = 2;
@@ -220,30 +227,30 @@ class MainFrame implements ActionListener{
         // Botão Emprestar livro
         this.emprestimoButton = new JButton();
         emprestimoButton.setText("Empréstimo");
-        emprestimoButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        emprestimoButton.setFont(new Font("Verdana", Font.BOLD, 20));
+        emprestimoButton.addActionListener(this);
         c.weighty = 1.5;
-        c.gridx = 0;
-        c.gridy = 1;
+        c.gridx = 3;
+        c.gridy = 0;
         menuPanel.add(emprestimoButton, c);
-        
-        // Botão devolver livro
-        this.devolButton = new JButton();
-        devolButton.setText("Devolução");
-        devolButton.setFont(new Font("Verdana", Font.BOLD, 30));
-        c.weighty = 1.5;
-        c.gridx = 1;
-        c.gridy = 1;
-        menuPanel.add(devolButton, c);
         
         // Botão cadastrar cliente
         this.cdstClienteButton = new JButton();
         cdstClienteButton.setText("Cadastro Cliente");
-        cdstClienteButton.setFont(new Font("Verdana", Font.BOLD, 30));
+        cdstClienteButton.setFont(new Font("Verdana", Font.BOLD, 20));
         cdstClienteButton.addActionListener(this);
         c.weighty = 1.5;
-        c.gridx = 2;
-        c.gridy = 1;
+        c.gridx = 4;
+        c.gridy = 0;
         menuPanel.add(cdstClienteButton, c);
+        
+        // Lista de empréstimos abertos
+        this.emprestimosAbertos = new JList();
+        c.gridx = 0;
+        c.gridy = 2;
+        c.weightx = 5;
+        c.weighty = 5;
+        menuPanel.add(emprestimosAbertos, c);
     }
     
     /**
@@ -499,7 +506,7 @@ class MainFrame implements ActionListener{
      * Constrói a tela de cadastro de funcionário.
      */
     public void buildCdstFuncScreen(){
-        // Painel de cadastro do cliente
+        // Painel de cadastro do funcionário
         this.cdstFuncPanel =  new JPanel();
         cdstFuncPanel.setBackground(new Color(0x123456));
         cdstFuncPanel.setBounds(0, 0, 1800, 1000);
@@ -654,7 +661,165 @@ class MainFrame implements ActionListener{
         botoes.add(cancelaButton);
         cdstFuncPanel.add(botoes);
     }
+    
+    /**
+     * Constrói a tela de empréstimo.
+     */
+    public void buildEmprestimoScreen(){
+        // Painel de empréstimo
+        this.emprestimoPanel =  new JPanel();
+        emprestimoPanel.setBackground(new Color(0x123456));
+        emprestimoPanel.setBounds(0, 0, 1800, 1000);
+        emprestimoPanel.setLayout(new GridLayout(9, 1));
         
+        // Título da página
+        JLabel label = new JLabel();
+        label.setText("Empréstimo");
+        label.setFont(new Font("Verdana", Font.BOLD, 35));
+        label.setForeground(Color.BLACK);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        emprestimoPanel.add(label);
+        
+        // Campo de CPF do cliente (com label)
+        JPanel cpfCli = new JPanel();
+        cpfCli.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
+        cpfCli.setBackground(new Color(0x123456));
+        label = new JLabel();
+        label.setText("CPF do cliente");
+        label.setFont(new Font("Arial", Font.PLAIN, 25));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(300, 30));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        cpfCli.add(label);
+        inputCPF = new JTextField();
+        inputCPF.setFont(new Font("Arial", Font.PLAIN, 25));
+        inputCPF.setPreferredSize(new Dimension(500, 40));
+        cpfCli.add(inputCPF);
+        emprestimoPanel.add(cpfCli);
+        
+        // Campo de livro
+        JPanel isbnLivro= new JPanel();
+        isbnLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
+        isbnLivro.setBackground(new Color(0x123456));
+        label = new JLabel();
+        label.setText("ISBN 1");
+        label.setFont(new Font("Arial", Font.PLAIN, 25));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(300, 30));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        isbnLivro.add(label);
+        inputLivro1 = new JTextField();
+        inputLivro1.setFont(new Font("Arial", Font.PLAIN, 25));
+        inputLivro1.setPreferredSize(new Dimension(500, 40));
+        isbnLivro.add(inputLivro1);
+        emprestimoPanel.add(isbnLivro);
+        
+        // Campo de livro
+        isbnLivro= new JPanel();
+        isbnLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
+        isbnLivro.setBackground(new Color(0x123456));
+        label = new JLabel();
+        label.setText("ISBN 2");
+        label.setFont(new Font("Arial", Font.PLAIN, 25));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(300, 30));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        isbnLivro.add(label);
+        inputLivro2 = new JTextField();
+        inputLivro2.setFont(new Font("Arial", Font.PLAIN, 25));
+        inputLivro2.setPreferredSize(new Dimension(500, 40));
+        isbnLivro.add(inputLivro2);
+        emprestimoPanel.add(isbnLivro);
+        
+        // Campo de livro
+        isbnLivro= new JPanel();
+        isbnLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
+        isbnLivro.setBackground(new Color(0x123456));
+        label = new JLabel();
+        label.setText("ISBN 3");
+        label.setFont(new Font("Arial", Font.PLAIN, 25));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(300, 30));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        isbnLivro.add(label);
+        inputLivro3 = new JTextField();
+        inputLivro3.setFont(new Font("Arial", Font.PLAIN, 25));
+        inputLivro3.setPreferredSize(new Dimension(500, 40));
+        isbnLivro.add(inputLivro3);
+        emprestimoPanel.add(isbnLivro);
+        
+        // Campo de livro
+        isbnLivro= new JPanel();
+        isbnLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
+        isbnLivro.setBackground(new Color(0x123456));
+        label = new JLabel();
+        label.setText("ISBN 4");
+        label.setFont(new Font("Arial", Font.PLAIN, 25));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(300, 30));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        isbnLivro.add(label);
+        inputLivro4 = new JTextField();
+        inputLivro4.setFont(new Font("Arial", Font.PLAIN, 25));
+        inputLivro4.setPreferredSize(new Dimension(500, 40));
+        isbnLivro.add(inputLivro4);
+        emprestimoPanel.add(isbnLivro);
+        
+        // Campo de livro
+        isbnLivro = new JPanel();
+        isbnLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
+        isbnLivro.setBackground(new Color(0x123456));
+        label = new JLabel();
+        label.setText("ISBN 5");
+        label.setFont(new Font("Arial", Font.PLAIN, 25));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(300, 30));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        isbnLivro.add(label);
+        inputLivro5 = new JTextField();
+        inputLivro5.setFont(new Font("Arial", Font.PLAIN, 25));
+        inputLivro5.setPreferredSize(new Dimension(500, 40));
+        isbnLivro.add(inputLivro5);
+        emprestimoPanel.add(isbnLivro);
+        
+        // Campo de duração em dias (com label)
+        JPanel duracao = new JPanel();
+        duracao.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
+        duracao.setBackground(new Color(0x123456));
+        label = new JLabel();
+        label.setText("Duração");
+        label.setFont(new Font("Arial", Font.PLAIN, 25));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(300, 30));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        duracao.add(label);
+        inputDuracao = new JFormattedTextField(new NumberFormatter());
+        inputDuracao.setFont(new Font("Arial", Font.PLAIN, 25));
+        inputDuracao.setPreferredSize(new Dimension(100, 40));
+        duracao.add(inputDuracao);
+        emprestimoPanel.add(duracao);
+        
+        // Botão confirmar
+        JPanel botoes = new JPanel();
+        botoes.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
+        botoes.setBackground(new Color(0x123456));
+        confirmaEmprstButton = new JButton();
+        confirmaEmprstButton.setText("Confirmar");
+        confirmaEmprstButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        confirmaEmprstButton.addActionListener(this);
+        confirmaEmprstButton.setPreferredSize(new Dimension(200, 50));
+        botoes.add(confirmaEmprstButton);
+                
+        // Botão cancelar
+        this.cancelaButton = new JButton();
+        cancelaButton.setText("Cancelar");
+        cancelaButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        cancelaButton.addActionListener(this);
+        cancelaButton.setPreferredSize(new Dimension(200, 50));
+        botoes.add(cancelaButton);
+        emprestimoPanel.add(botoes);
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e){
         // Ações para o botão de login
@@ -699,6 +864,14 @@ class MainFrame implements ActionListener{
             auri.add(this.cdstFuncPanel);
             auri.setVisible(true);
         
+        // Ações para o botão de empréstimo
+        } else if(e.getSource()==this.emprestimoButton){    
+            auri.setVisible(false);
+            this.buildEmprestimoScreen();
+            auri.remove(this.menuPanel);
+            auri.add(this.emprestimoPanel);
+            auri.setVisible(true);
+            
         // Ações para o botão de cancelar adição de livro
         } else if(e.getSource()==this.cancelaButton){
             auri.setVisible(false);
@@ -730,6 +903,8 @@ class MainFrame implements ActionListener{
                     JOptionPane.showMessageDialog(auri, "Livro já se encontra no acervo.");
                 }
             }
+        
+        // Ações para o botão de confirmar cadastrado de cliente
         } else if(e.getSource()==this.confirmaCdstButton){
             if(inputNome.getText().isEmpty() || inputCPF.getText().isEmpty() || inputEndereco.getText().isEmpty() ||
                     inputCelular.getText().isEmpty() || inputData.getText().isEmpty()){
@@ -753,6 +928,8 @@ class MainFrame implements ActionListener{
                 }
                 
             }
+            
+        // Ações para o botão de confirmar cadastro de funcionario
         } else if(e.getSource()==this.confirmaCdstButton2){
             if(inputNome.getText().isEmpty() || inputCPF.getText().isEmpty() || inputEndereco.getText().isEmpty() ||
                     inputCelular.getText().isEmpty() || inputData.getText().isEmpty() || inputCargo.getText().isEmpty() || senha.getText().isEmpty()){
@@ -777,7 +954,42 @@ class MainFrame implements ActionListener{
                 }
                 
             }
-        }
         
+        // Ações para botão de confirmar empréstimo
+        } else if(e.getSource()==this.confirmaEmprstButton){
+            if(inputCPF.getText().isEmpty()){
+                JOptionPane.showMessageDialog(auri, "O CPF não pode ficar em branco.");
+            } else if(inputDuracao.getText().isEmpty()){
+                JOptionPane.showMessageDialog(auri, "A duração não pode ficar em branco.");
+            } else if(inputLivro1.getText().isEmpty() && inputLivro2.getText().isEmpty() && inputLivro3.getText().isEmpty() && inputLivro4.getText().isEmpty() &&
+                    inputLivro5.getText().isEmpty()){
+                JOptionPane.showMessageDialog(auri, "Pelo menos 1 livro deve ser emprestado.");
+            } else {
+                List<Livro> livros = new ArrayList<>();             
+                if(!inputLivro1.getText().isEmpty())
+                    livros.add(bd.getLivro(inputLivro1.getText()));
+                if(!inputLivro2.getText().isEmpty())
+                    livros.add(bd.getLivro(inputLivro1.getText()));
+                if(!inputLivro3.getText().isEmpty())
+                    livros.add(bd.getLivro(inputLivro1.getText()));
+                if(!inputLivro4.getText().isEmpty())
+                    livros.add(bd.getLivro(inputLivro1.getText()));
+                if(!inputLivro5.getText().isEmpty())
+                    livros.add(bd.getLivro(inputLivro1.getText()));
+                
+                boolean resultado = bd.novoEmprestimo(funcionarioAtual, inputCPF.getText(), livros);
+                float total = Float.parseFloat(inputDuracao.getText());
+                if(resultado){
+                    JOptionPane.showMessageDialog(auri, "Empréstimo realizado com sucesso.\nTotal: R$"+total);
+                    auri.setVisible(false);
+                    this.buildMenuScreen(funcionarioAtual.ehGerente());
+                    auri.getContentPane().removeAll();
+                    auri.add(this.menuPanel);
+                    auri.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(auri, "Cliente não cadastrado no sistema.");
+                }
+            }
+        }
     }
 }
