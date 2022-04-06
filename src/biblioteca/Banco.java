@@ -66,14 +66,14 @@ public class Banco {
      * @param genero
      * @param autor
      * @param ISBN
+     * @param editora
      * @param anoPublicacao
-     * @param qtdPaginas
      * @return boolean (sucesso ou falha)
      */
-    public boolean adicionaLivro(String titulo, String genero, String autor, String ISBN, int anoPublicacao){
+    public boolean adicionaLivro(String titulo, String autor, String editora, String ISBN, int anoPublicacao){
         if(getLivro(ISBN)!=null)
             return false;
-        Livro l = new Livro(titulo, autor, genero, ISBN, anoPublicacao);
+        Livro l = new Livro(titulo, autor, editora, ISBN,  anoPublicacao);
         livros.add(l);
         return true;
     }

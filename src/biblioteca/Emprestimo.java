@@ -1,6 +1,7 @@
 package biblioteca;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Emprestimo {
@@ -23,7 +24,7 @@ public class Emprestimo {
         this.devolvido = devolvido;
         this.funcionario = func;
         this.cliente = cli;
-        this.data = LocalDate.parse(data);
+        this.data = LocalDate.parse(data, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
         this.livros = livros;
         this.total = total;
     }
@@ -53,6 +54,18 @@ public class Emprestimo {
         }
         String isbn = String.join("/", listaIsbn);
         
-        return String.join(",", Boolean.toString(devolvido), funcionario.getCPF(), cliente.getCPF(), isbn, Float.toString(total), data.toString());
+        return String.join(",", Boolean.toString(devolvido), funcionario.getCPF(), cliente.getCPF(), isbn, Float.toString(total), data.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
     }
+    
+    public String[] info(){
+        List<String> livros = new ArrayList<String>();
+        for(Livro l: this.livros){
+            livros.add(l.titulo);
+        }
+        String nomes = String.join(", ", livros);
+        String[] infos = {this.cliente.nome, this.cliente.cpf, this.funcionario.nome, nomes};
+        return infos ;
+    }
+    
+
 }

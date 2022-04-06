@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -28,8 +29,11 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 
 /**
@@ -53,9 +57,9 @@ class MainFrame implements ActionListener{
             cdstClienteButton, cdstFuncButton;
     private final JFrame auri;
     private JLabel logo;
-    private JList emprestimosAbertos;
+    private JTable emprestimosAbertos;
     private JPanel loginPanel, menuPanel, addPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
-    private JTextField login, inputTitulo, inputGenero, inputAutor, inputISBN, inputQtd, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo, inputLivro1,
+    private JTextField login, inputTitulo, inputEditora, inputAutor, inputISBN, inputQtd, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo, inputLivro1,
             inputLivro2, inputLivro3, inputLivro4, inputLivro5, inputDuracao;
     private JPasswordField senha;
     private final Banco bd;
@@ -192,26 +196,24 @@ class MainFrame implements ActionListener{
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(20, 50, 20, 50);
-                
+        
+        // Painel de botoes 
+        JPanel botoes = new JPanel();
+        botoes.setBackground(new Color(0x123456));
+        botoes.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 10));
+        
         // Botão adicionar livro
         this.addLivroButton = new JButton();
         addLivroButton.setText("Adicionar Livro");
         addLivroButton.setFont(new Font("Verdana", Font.BOLD, 20));
         addLivroButton.addActionListener(this);
-        c.weightx = 1;
-        c.weighty = 1.5;
-        c.gridx = 0;
-        c.gridy = 0;
-        menuPanel.add(addLivroButton, c);
+        botoes.add(addLivroButton);
         
         // Botão remover livro
         this.rmvLivroButton = new JButton();
         rmvLivroButton.setText("Remover Livro");
         rmvLivroButton.setFont(new Font("Verdana", Font.BOLD, 20));
-        c.weighty = 1.5;
-        c.gridx = 1;
-        c.gridy = 0;
-        menuPanel.add(rmvLivroButton, c);
+        botoes.add(rmvLivroButton);
         
         // Botão cadastrar funcionário
         this.cdstFuncButton = new JButton();
@@ -219,38 +221,41 @@ class MainFrame implements ActionListener{
         cdstFuncButton.setText("Cadastro Funcionário");
         cdstFuncButton.setFont(new Font("Verdana", Font.BOLD, 20));
         cdstFuncButton.addActionListener(this);
-        c.weighty = 1.5;
-        c.gridx = 2;
-        c.gridy = 0;
-        menuPanel.add(cdstFuncButton, c);
+        botoes.add(cdstFuncButton);
         
         // Botão Emprestar livro
         this.emprestimoButton = new JButton();
         emprestimoButton.setText("Empréstimo");
         emprestimoButton.setFont(new Font("Verdana", Font.BOLD, 20));
         emprestimoButton.addActionListener(this);
-        c.weighty = 1.5;
-        c.gridx = 3;
-        c.gridy = 0;
-        menuPanel.add(emprestimoButton, c);
+        botoes.add(emprestimoButton);
         
         // Botão cadastrar cliente
         this.cdstClienteButton = new JButton();
         cdstClienteButton.setText("Cadastro Cliente");
         cdstClienteButton.setFont(new Font("Verdana", Font.BOLD, 20));
         cdstClienteButton.addActionListener(this);
-        c.weighty = 1.5;
-        c.gridx = 4;
+        botoes.add(cdstClienteButton);
+        
+        c.gridx = 0;
         c.gridy = 0;
-        menuPanel.add(cdstClienteButton, c);
+        c.weighty = 1;
+        menuPanel.add(botoes, c);
+        
         
         // Lista de empréstimos abertos
-        this.emprestimosAbertos = new JList();
+        String[] nomeColunas = {"Nome do cliente", "CPF do cliente", "Nome do funcionário","Livros emprestados"};
+        DefaultTableModel model = new DefaultTableModel(nomeColunas, 0);
+        this.emprestimosAbertos = new JTable(model);
+        for(Emprestimo ea: bd.emprestimosEmAberto()){
+            model.addRow(ea.info());
+        }
+        emprestimosAbertos.getColumnModel().getColumn(3).setPreferredWidth(300);    // Tornar a coluna de livros a maior
+        emprestimosAbertos.setDefaultEditor(Object.class, null);    // Tornar as células não editáveis  
         c.gridx = 0;
-        c.gridy = 2;
-        c.weightx = 5;
+        c.gridy = 1;
         c.weighty = 5;
-        menuPanel.add(emprestimosAbertos, c);
+        menuPanel.add(new JScrollPane(emprestimosAbertos), c);
     }
     
     /**
@@ -306,21 +311,21 @@ class MainFrame implements ActionListener{
         addPanel.add(autorLivro);
         
         // Campo de gênero do livro (com label)
-        JPanel generoLivro = new JPanel();
-        generoLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
-        generoLivro.setBackground(new Color(0x123456));
+        JPanel editoraLivro = new JPanel();
+        editoraLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
+        editoraLivro.setBackground(new Color(0x123456));
         label = new JLabel();
         label.setText("Gênero");
         label.setFont(new Font("Arial", Font.PLAIN, 25));
         label.setForeground(Color.BLACK);
         label.setPreferredSize(new Dimension(300, 30));
         label.setHorizontalAlignment(SwingConstants.RIGHT);
-        generoLivro.add(label);        
-        inputGenero = new JTextField();
-        inputGenero.setFont(new Font("Arial", Font.PLAIN, 20));
-        inputGenero.setPreferredSize(new Dimension(500, 40));
-        generoLivro.add(inputGenero);
-        addPanel.add(generoLivro);
+        editoraLivro.add(label);        
+        inputEditora = new JTextField();
+        inputEditora.setFont(new Font("Arial", Font.PLAIN, 20));
+        inputEditora.setPreferredSize(new Dimension(500, 40));
+        editoraLivro.add(inputEditora);
+        addPanel.add(editoraLivro);
         
         // Campo de ano de publicação do livro (com label)
         JPanel anoLivro = new JPanel();
@@ -882,16 +887,16 @@ class MainFrame implements ActionListener{
         
         // Ações para o botão de confirmar adição de livro
         } else if(e.getSource()==this.confirmaAddButton){
-            if(inputTitulo.getText().isEmpty() || inputAutor.getText().isEmpty() || inputGenero.getText().isEmpty() ||
+            if(inputTitulo.getText().isEmpty() || inputAutor.getText().isEmpty() || inputEditora.getText().isEmpty() ||
                     inputISBN.getText().isEmpty() || inputAno.getText().isEmpty() || inputQtd.getText().isEmpty()){
                 JOptionPane.showMessageDialog(auri, "Nenhuma informação pode ficar em branco");
             } else {
                 String titulo = inputTitulo.getText();
-                String genero = inputGenero.getText();
+                String editora = inputEditora.getText();
                 String autor = inputAutor.getText();
                 String ISBN = inputISBN.getText();
                 int ano =  Integer.parseInt(inputAno.getText().replaceAll("\\.",""));  
-                boolean resultado = bd.adicionaLivro(titulo, genero, autor, ISBN, ano);
+                boolean resultado = bd.adicionaLivro(titulo, autor, editora, ISBN, ano);
                 if(resultado){
                     JOptionPane.showMessageDialog(auri, "Livro adicionado ao acervo.");
                     auri.setVisible(false);
