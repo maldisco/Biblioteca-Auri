@@ -18,22 +18,29 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.text.NumberFormatter;
 
 /**
@@ -44,7 +51,10 @@ public class Biblioteca {
     public static void main(String[] args) {
         Banco bd = new Banco();
         bd.carregaDados();
-        MainFrame mf = new MainFrame(bd);     
+        
+        SwingUtilities.invokeLater(() -> {
+            MainFrame mf = new MainFrame(bd);
+        });   
         
     } 
 }
@@ -60,8 +70,9 @@ class MainFrame implements ActionListener{
     private JTable emprestimosAbertos;
     private JPanel loginPanel, menuPanel, addPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
     private JTextField login, inputTitulo, inputEditora, inputAutor, inputISBN, inputQtd, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo, inputLivro1,
-            inputLivro2, inputLivro3, inputLivro4, inputLivro5, inputDuracao;
+            inputLivro2, inputLivro3, inputLivro4, inputLivro5, inputDuracao, inputPesquisa;
     private JPasswordField senha;
+    private TableRowSorter<TableModel> pesquisa;
     private final Banco bd;
     private Funcionario funcionarioAtual;
     
@@ -241,21 +252,62 @@ class MainFrame implements ActionListener{
         c.gridy = 0;
         c.weighty = 1;
         menuPanel.add(botoes, c);
-        
-        
-        // Lista de empréstimos abertos
+               
+        // Lista de empréstimos em aberto
+        JPanel emp = new JPanel();
+        emp.setBackground(new Color(0x123456));
+        emp.setLayout(new BoxLayout(emp, BoxLayout.PAGE_AXIS));
+                
         String[] nomeColunas = {"Nome do cliente", "CPF do cliente", "Nome do funcionário","Livros emprestados"};
         DefaultTableModel model = new DefaultTableModel(nomeColunas, 0);
-        this.emprestimosAbertos = new JTable(model);
         for(Emprestimo ea: bd.emprestimosEmAberto()){
             model.addRow(ea.info());
         }
+        this.emprestimosAbertos = new JTable(model);      
         emprestimosAbertos.getColumnModel().getColumn(3).setPreferredWidth(300);    // Tornar a coluna de livros a maior
+        emprestimosAbertos.setRowHeight(25);
         emprestimosAbertos.setDefaultEditor(Object.class, null);    // Tornar as células não editáveis  
+         
+        this.pesquisa = new TableRowSorter<>(emprestimosAbertos.getModel());        
+        this.inputPesquisa = new JTextField();
+        inputPesquisa.setPreferredSize(new Dimension(1000, 30));
+        inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
+            
+            @Override
+            public void insertUpdate(DocumentEvent e){
+                String text = inputPesquisa.getText();
+                
+                if(text.trim().length()==0){
+                    pesquisa.setRowFilter(null);
+                } else {
+                    pesquisa.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                } 
+            }
+            
+            @Override
+            public void removeUpdate(DocumentEvent e){
+                String text = inputPesquisa.getText();
+                
+                if(text.trim().length()==0){
+                    pesquisa.setRowFilter(null);
+                } else {
+                    pesquisa.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
+            
+            @Override
+            public void changedUpdate(DocumentEvent e){
+                throw new UnsupportedOperationException("Ainda não suportada.");
+            }
+        });
+        emp.add(inputPesquisa);
+        emp.add(Box.createRigidArea(new Dimension(0, 50)));
+        emp.add(new JScrollPane(emprestimosAbertos));
+        
         c.gridx = 0;
         c.gridy = 1;
         c.weighty = 5;
-        menuPanel.add(new JScrollPane(emprestimosAbertos), c);
+        menuPanel.add(emp, c);
     }
     
     /**

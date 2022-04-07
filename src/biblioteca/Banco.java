@@ -199,7 +199,9 @@ public class Banco {
                 String ISBNs[] = data[3].split("/");
                 List<Livro> l = new ArrayList<>();
                 for(String isbn: ISBNs){
-                    l.add(getLivro(isbn));
+                    Livro livro =  getLivro(isbn);
+                    livro.setEmprestado(true);
+                    l.add(livro);
                 }
                 
                 Emprestimo e = new Emprestimo(Boolean.parseBoolean(data[0]), this.getFuncionario(data[1]), this.getCliente(data[2]), l, Float.parseFloat(data[4]), data[5]);    

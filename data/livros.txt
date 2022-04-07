@@ -1,14 +1,14 @@
-Terra das gemas Vol.1,Haruko Ichikawa,NewPop,978-65-86799-87-3,2013,false
-Terra das gemas Vol.2,Haruko Ichikawa,NewPop,978-65-86799-88-0,2014,false
-SPY x FAMILY,Tatsuya Endo,PlanetManga,978-65-5512-303-6,2019,false
-Duna,Frank Herbert,Aleph,978-85-7657-313-5,2017,false
-Medo clássico,Edgar Allan Poe,Darkside,978-85-9454-024-9,2017,false
-Crime e castigo,Fiódor Dostoiévski,34,978-85-7326-646-7,2018,false
-Bakemonogatari Vol.1,Nisio Isin,PlanetManga,978-85-426-2351-2,2019,false
-Bakemonogatari Vol.2,Nisio Isin,PlanetManga,978-85-426-2496-0,2019,false
-Bakemonogatari Vol.3,Nisio Isin,PlanetManga,978-85-426-2643-8,2019,false
-Beastars Vol.1,Paru Itagaki,PlanetManga,978-85-426-1868-6,2019,false
-Beastars Vol.2,Paru Itagaki,PlanetManga,978-85-426-2015-3,2019,false
-Beastars Vol.3,Paru Itagaki,PlanetManga,978-85-426-2261-4,2019,false
-O nome do vento,Patrick Rothfuss,Arqueiro,978-85-99296-49-3,2009,false
-O temor do sábio,Patrick Rothfuss,Arqueiro,978-85-8041-032-7,2011,false
+Terra das gemas Vol.1,Haruko Ichikawa,NewPop,978-65-86799-87-3,2013,true
+Terra das gemas Vol.2,Haruko Ichikawa,NewPop,978-65-86799-88-0,2014,true
+SPY x FAMILY,Tatsuya Endo,PlanetManga,978-65-5512-303-6,2019,true
+Duna,Frank Herbert,Aleph,978-85-7657-313-5,2017,true
+Medo clássico,Edgar Allan Poe,Darkside,978-85-9454-024-9,2017,true
+Crime e castigo,Fiódor Dostoiévski,34,978-85-7326-646-7,2018,true
+Bakemonogatari Vol.1,Nisio Isin,PlanetManga,978-85-426-2351-2,2019,true
+Bakemonogatari Vol.2,Nisio Isin,PlanetManga,978-85-426-2496-0,2019,true
+Bakemonogatari Vol.3,Nisio Isin,PlanetManga,978-85-426-2643-8,2019,true
+Beastars Vol.1,Paru Itagaki,PlanetManga,978-85-426-1868-6,2019,true
+Beastars Vol.2,Paru Itagaki,PlanetManga,978-85-426-2015-3,2019,true
+Beastars Vol.3,Paru Itagaki,PlanetManga,978-85-426-2261-4,2019,true
+O nome do vento,Patrick Rothfuss,Arqueiro,978-85-99296-49-3,2009,true
+O temor do sábio,Patrick Rothfuss,Arqueiro,978-85-8041-032-7,2011,true
