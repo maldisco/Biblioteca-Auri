@@ -9,24 +9,40 @@ public class Emprestimo {
     protected Funcionario funcionario;
     protected Cliente cliente;
     protected List<Livro> livros;
-    protected float total;
     protected LocalDate data;
+    protected int id;
         
-    public Emprestimo(Funcionario func, Cliente cli, List<Livro> livros){
+    public Emprestimo(int id, Funcionario func, Cliente cli, List<Livro> livros){
+        this.id = id;
         this.funcionario = func;
         this.cliente = cli;
         this.data=LocalDate.now();
         this.livros=livros;
-        this.total=0;
     }
     
-    public Emprestimo(boolean devolvido, Funcionario func, Cliente cli, List<Livro> livros, float total, String data){
+    public Emprestimo(int id, boolean devolvido, Funcionario func, Cliente cli, List<Livro> livros, String data){
+        this.id = id;
         this.devolvido = devolvido;
         this.funcionario = func;
         this.cliente = cli;
         this.data = LocalDate.parse(data, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
         this.livros = livros;
-        this.total = total;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public List<Livro> getLivros() {
+        return livros;
+    }
+    
+    public void setDevolvido(boolean devolvido) {
+        this.devolvido = devolvido;
     }
     
     public void adicionarLivro(Livro l){
@@ -43,10 +59,6 @@ public class Emprestimo {
         this.livros.clear();
     }
     
-    public void calcularTotal(int dias){
-        this.total=1*dias;
-    }
-    
     public String toString(){
         List<String> listaIsbn = new ArrayList<String>();
         for(Livro l: this.livros){
@@ -54,7 +66,7 @@ public class Emprestimo {
         }
         String isbn = String.join("/", listaIsbn);
         
-        return String.join(",", Boolean.toString(devolvido), funcionario.getCPF(), cliente.getCPF(), isbn, Float.toString(total), data.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+        return String.join(",", Integer.toString(id), Boolean.toString(devolvido), funcionario.getCPF(), cliente.getCPF(), isbn, data.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
     }
     
     public String[] info(){
@@ -63,7 +75,7 @@ public class Emprestimo {
             livros.add(l.titulo);
         }
         String nomes = String.join(", ", livros);
-        String[] infos = {this.cliente.nome, this.cliente.cpf, this.funcionario.nome, nomes};
+        String[] infos = {String.valueOf(id), this.cliente.nome, this.cliente.cpf, this.funcionario.nome, nomes};
         return infos ;
     }
     

@@ -52,6 +52,10 @@ public class Banco {
         return funcionarios.stream().filter(func -> CPF.equals(func.getCPF())).findFirst().orElse(null);
     }
     
+    public Emprestimo getEmprestimo (int id) {
+        return historico.stream().filter(emp -> id == emp.getId()).findFirst().orElse(null);
+    }
+    
     /**
      * Encontra todos os empréstimos ainda em aberto
      * @return List
@@ -138,7 +142,7 @@ public class Banco {
         if(getCliente(cpf)==null)
             return false;
         Cliente c = getCliente(cpf);
-        Emprestimo e = new Emprestimo(funcionario, c, livros);
+        Emprestimo e = new Emprestimo(historico.size(), funcionario, c, livros);
         historico.add(e);
         return true;
     }
@@ -196,7 +200,7 @@ public class Banco {
             
             while(reader4.hasNextLine()){
                 String data[] =  reader4.nextLine().split(",");
-                String ISBNs[] = data[3].split("/");
+                String ISBNs[] = data[4].split("/");
                 List<Livro> l = new ArrayList<>();
                 for(String isbn: ISBNs){
                     Livro livro =  getLivro(isbn);
@@ -204,7 +208,7 @@ public class Banco {
                     l.add(livro);
                 }
                 
-                Emprestimo e = new Emprestimo(Boolean.parseBoolean(data[0]), this.getFuncionario(data[1]), this.getCliente(data[2]), l, Float.parseFloat(data[4]), data[5]);    
+                Emprestimo e = new Emprestimo(Integer.parseInt(data[0]), Boolean.parseBoolean(data[1]), this.getFuncionario(data[2]), this.getCliente(data[3]), l, data[5]);    
                 historico.add(e);
             }
              

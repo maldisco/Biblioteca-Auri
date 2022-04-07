@@ -16,6 +16,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -63,16 +67,17 @@ public class Biblioteca {
  * Classe utilizada para implementar a interface gráfica
  */
 class MainFrame implements ActionListener{
-    private JButton loginButton, confirmaAddButton, confirmaCdstButton, confirmaEmprstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, rmvLivroButton,
+    private JButton loginButton, confirmaDevButton, confirmaAddButton, confirmaCdstButton, confirmaEmprstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, rmvLivroButton,
             cdstClienteButton, cdstFuncButton;
     private final JFrame auri;
     private JLabel logo;
     private JTable emprestimosAbertos;
     private JPanel loginPanel, menuPanel, addPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
     private JTextField login, inputTitulo, inputEditora, inputAutor, inputISBN, inputQtd, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo, inputLivro1,
-            inputLivro2, inputLivro3, inputLivro4, inputLivro5, inputDuracao, inputPesquisa;
+            inputLivro2, inputLivro3, inputDuracao, inputPesquisa;
     private JPasswordField senha;
     private TableRowSorter<TableModel> pesquisa;
+    private DefaultTableModel model;
     private final Banco bd;
     private Funcionario funcionarioAtual;
     
@@ -258,17 +263,20 @@ class MainFrame implements ActionListener{
         emp.setBackground(new Color(0x123456));
         emp.setLayout(new BoxLayout(emp, BoxLayout.PAGE_AXIS));
                 
-        String[] nomeColunas = {"Nome do cliente", "CPF do cliente", "Nome do funcionário","Livros emprestados"};
-        DefaultTableModel model = new DefaultTableModel(nomeColunas, 0);
+        String[] nomeColunas = {"Id", "Nome do cliente", "CPF do cliente", "Nome do funcionário", "Livros emprestados"};
+        this.model = new DefaultTableModel(nomeColunas, 0);
         for(Emprestimo ea: bd.emprestimosEmAberto()){
             model.addRow(ea.info());
         }
-        this.emprestimosAbertos = new JTable(model);      
-        emprestimosAbertos.getColumnModel().getColumn(3).setPreferredWidth(300);    // Tornar a coluna de livros a maior
+        this.emprestimosAbertos = new JTable(model);
+        emprestimosAbertos.getColumnModel().getColumn(0).setPreferredWidth(1);    // Tornar a coluna de Id menor
+        emprestimosAbertos.getColumnModel().getColumn(4).setPreferredWidth(300);    // Tornar a coluna de livros maior
         emprestimosAbertos.setRowHeight(25);
-        emprestimosAbertos.setDefaultEditor(Object.class, null);    // Tornar as células não editáveis  
-         
+        emprestimosAbertos.setDefaultEditor(Object.class, null);    // Tornar as células não editáveis          
         this.pesquisa = new TableRowSorter<>(emprestimosAbertos.getModel());        
+        emprestimosAbertos.setRowSorter(pesquisa);
+
+        
         this.inputPesquisa = new JTextField();
         inputPesquisa.setPreferredSize(new Dimension(1000, 30));
         inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
@@ -300,9 +308,19 @@ class MainFrame implements ActionListener{
                 throw new UnsupportedOperationException("Ainda não suportada.");
             }
         });
+        
+        confirmaDevButton = new JButton();
+        confirmaDevButton.setText("Devolução");
+        confirmaDevButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        confirmaDevButton.addActionListener(this);
+        confirmaDevButton.setPreferredSize(new Dimension(200, 50));
+        confirmaDevButton.setAlignmentX(SwingConstants.RIGHT);
+        
         emp.add(inputPesquisa);
         emp.add(Box.createRigidArea(new Dimension(0, 50)));
         emp.add(new JScrollPane(emprestimosAbertos));
+        emp.add(Box.createRigidArea(new Dimension(0, 20)));
+        emp.add(confirmaDevButton);
         
         c.gridx = 0;
         c.gridy = 1;
@@ -362,12 +380,12 @@ class MainFrame implements ActionListener{
         autorLivro.add(inputAutor);
         addPanel.add(autorLivro);
         
-        // Campo de gênero do livro (com label)
+        // Campo de editora do livro (com label)
         JPanel editoraLivro = new JPanel();
         editoraLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
         editoraLivro.setBackground(new Color(0x123456));
         label = new JLabel();
-        label.setText("Gênero");
+        label.setText("Editora");
         label.setFont(new Font("Arial", Font.PLAIN, 25));
         label.setForeground(Color.BLACK);
         label.setPreferredSize(new Dimension(300, 30));
@@ -805,57 +823,6 @@ class MainFrame implements ActionListener{
         isbnLivro.add(inputLivro3);
         emprestimoPanel.add(isbnLivro);
         
-        // Campo de livro
-        isbnLivro= new JPanel();
-        isbnLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
-        isbnLivro.setBackground(new Color(0x123456));
-        label = new JLabel();
-        label.setText("ISBN 4");
-        label.setFont(new Font("Arial", Font.PLAIN, 25));
-        label.setForeground(Color.BLACK);
-        label.setPreferredSize(new Dimension(300, 30));
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        isbnLivro.add(label);
-        inputLivro4 = new JTextField();
-        inputLivro4.setFont(new Font("Arial", Font.PLAIN, 25));
-        inputLivro4.setPreferredSize(new Dimension(500, 40));
-        isbnLivro.add(inputLivro4);
-        emprestimoPanel.add(isbnLivro);
-        
-        // Campo de livro
-        isbnLivro = new JPanel();
-        isbnLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
-        isbnLivro.setBackground(new Color(0x123456));
-        label = new JLabel();
-        label.setText("ISBN 5");
-        label.setFont(new Font("Arial", Font.PLAIN, 25));
-        label.setForeground(Color.BLACK);
-        label.setPreferredSize(new Dimension(300, 30));
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        isbnLivro.add(label);
-        inputLivro5 = new JTextField();
-        inputLivro5.setFont(new Font("Arial", Font.PLAIN, 25));
-        inputLivro5.setPreferredSize(new Dimension(500, 40));
-        isbnLivro.add(inputLivro5);
-        emprestimoPanel.add(isbnLivro);
-        
-        // Campo de duração em dias (com label)
-        JPanel duracao = new JPanel();
-        duracao.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 50));
-        duracao.setBackground(new Color(0x123456));
-        label = new JLabel();
-        label.setText("Duração");
-        label.setFont(new Font("Arial", Font.PLAIN, 25));
-        label.setForeground(Color.BLACK);
-        label.setPreferredSize(new Dimension(300, 30));
-        label.setHorizontalAlignment(SwingConstants.RIGHT);
-        duracao.add(label);
-        inputDuracao = new JFormattedTextField(new NumberFormatter());
-        inputDuracao.setFont(new Font("Arial", Font.PLAIN, 25));
-        inputDuracao.setPreferredSize(new Dimension(100, 40));
-        duracao.add(inputDuracao);
-        emprestimoPanel.add(duracao);
-        
         // Botão confirmar
         JPanel botoes = new JPanel();
         botoes.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
@@ -928,6 +895,19 @@ class MainFrame implements ActionListener{
             auri.remove(this.menuPanel);
             auri.add(this.emprestimoPanel);
             auri.setVisible(true);
+        
+        } else if(e.getSource()==this.confirmaDevButton){
+            String id = (String) this.emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 0);
+            Emprestimo emp = bd.getEmprestimo(Integer.parseInt(id));
+            float total = emp.getData().until(LocalDate.now(), ChronoUnit.DAYS);
+            int input = JOptionPane.showConfirmDialog(null, "Realizar devolução?\nTotal: R$ "+total);
+            if(input==0){
+                emp.setDevolvido(true);
+                for(Livro l: emp.getLivros()){
+                    l.setEmprestado(false);
+                }
+                this.model.removeRow(emprestimosAbertos.getSelectedRow());
+            }
             
         // Ações para o botão de cancelar adição de livro
         } else if(e.getSource()==this.cancelaButton){
@@ -940,7 +920,7 @@ class MainFrame implements ActionListener{
         // Ações para o botão de confirmar adição de livro
         } else if(e.getSource()==this.confirmaAddButton){
             if(inputTitulo.getText().isEmpty() || inputAutor.getText().isEmpty() || inputEditora.getText().isEmpty() ||
-                    inputISBN.getText().isEmpty() || inputAno.getText().isEmpty() || inputQtd.getText().isEmpty()){
+                    inputISBN.getText().isEmpty() || inputAno.getText().isEmpty()){
                 JOptionPane.showMessageDialog(auri, "Nenhuma informação pode ficar em branco");
             } else {
                 String titulo = inputTitulo.getText();
@@ -1016,36 +996,39 @@ class MainFrame implements ActionListener{
         } else if(e.getSource()==this.confirmaEmprstButton){
             if(inputCPF.getText().isEmpty()){
                 JOptionPane.showMessageDialog(auri, "O CPF não pode ficar em branco.");
-            } else if(inputDuracao.getText().isEmpty()){
-                JOptionPane.showMessageDialog(auri, "A duração não pode ficar em branco.");
-            } else if(inputLivro1.getText().isEmpty() && inputLivro2.getText().isEmpty() && inputLivro3.getText().isEmpty() && inputLivro4.getText().isEmpty() &&
-                    inputLivro5.getText().isEmpty()){
+            } else if(inputLivro1.getText().isEmpty() && inputLivro2.getText().isEmpty() && inputLivro3.getText().isEmpty()){
                 JOptionPane.showMessageDialog(auri, "Pelo menos 1 livro deve ser emprestado.");
             } else {
                 List<Livro> livros = new ArrayList<>();             
                 if(!inputLivro1.getText().isEmpty())
-                    livros.add(bd.getLivro(inputLivro1.getText()));
+                    if(bd.getLivro(inputLivro1.getText())!=null)
+                        livros.add(bd.getLivro(inputLivro1.getText()));
                 if(!inputLivro2.getText().isEmpty())
-                    livros.add(bd.getLivro(inputLivro1.getText()));
+                    if(bd.getLivro(inputLivro2.getText())!=null)
+                        livros.add(bd.getLivro(inputLivro2.getText()));
                 if(!inputLivro3.getText().isEmpty())
-                    livros.add(bd.getLivro(inputLivro1.getText()));
-                if(!inputLivro4.getText().isEmpty())
-                    livros.add(bd.getLivro(inputLivro1.getText()));
-                if(!inputLivro5.getText().isEmpty())
-                    livros.add(bd.getLivro(inputLivro1.getText()));
+                    if(bd.getLivro(inputLivro3.getText())!=null)
+                        livros.add(bd.getLivro(inputLivro3.getText()));
                 
-                boolean resultado = bd.novoEmprestimo(funcionarioAtual, inputCPF.getText(), livros);
-                float total = Float.parseFloat(inputDuracao.getText());
-                if(resultado){
-                    JOptionPane.showMessageDialog(auri, "Empréstimo realizado com sucesso.\nTotal: R$"+total);
-                    auri.setVisible(false);
-                    this.buildMenuScreen(funcionarioAtual.ehGerente());
-                    auri.getContentPane().removeAll();
-                    auri.add(this.menuPanel);
-                    auri.setVisible(true);
+                if(livros.isEmpty()){
+                    JOptionPane.showMessageDialog(auri, "Nenhum livro foi encontrado.\nVerifique o ISBN.");
                 } else {
-                    JOptionPane.showMessageDialog(auri, "Cliente não cadastrado no sistema.");
-                }
+                    if(livros.stream().allMatch(l -> l.getEmprestado()==false)){
+                        boolean resultado = bd.novoEmprestimo(funcionarioAtual, inputCPF.getText(), livros);
+                        if(resultado){
+                            JOptionPane.showMessageDialog(auri, "Empréstimo realizado com sucesso.");
+                            auri.setVisible(false);
+                            this.buildMenuScreen(funcionarioAtual.ehGerente());
+                            auri.getContentPane().removeAll();
+                            auri.add(this.menuPanel);
+                            auri.setVisible(true);
+                        } else {
+                            JOptionPane.showMessageDialog(auri, "Cliente não cadastrado no sistema.");
+                        }
+                    } else{
+                        JOptionPane.showMessageDialog(auri, "Alguns dos livros consta como não-devolvido.");
+                    }                   
+                }    
             }
         }
     }

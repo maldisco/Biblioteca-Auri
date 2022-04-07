@@ -1,9 +1,5 @@
 package biblioteca;
 
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.util.Base64;
-
 /**
  * Superclasse que representa uma pessoa
  */
