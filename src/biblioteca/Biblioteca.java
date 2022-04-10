@@ -16,13 +16,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -73,8 +70,8 @@ class MainFrame implements ActionListener{
     private JLabel logo;
     private JTable emprestimosAbertos;
     private JPanel loginPanel, menuPanel, addPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
-    private JTextField login, inputTitulo, inputEditora, inputAutor, inputISBN, inputQtd, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo, inputLivro1,
-            inputLivro2, inputLivro3, inputDuracao, inputPesquisa;
+    private JTextField login, inputTitulo, inputEditora, inputAutor, inputISBN, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo, inputLivro1,
+            inputLivro2, inputLivro3, inputPesquisa;
     private JPasswordField senha;
     private TableRowSorter<TableModel> pesquisa;
     private DefaultTableModel model;
