@@ -849,11 +849,10 @@ class MainFrame implements ActionListener{
             if(f != null){
                 if(f.validar(senha.getText())){
                     this.funcionarioAtual = f;
-                    auri.setVisible(false);
                     this.buildMenuScreen(funcionarioAtual.ehGerente());
                     auri.remove(this.loginPanel);
                     auri.add(this.menuPanel);
-                    auri.setVisible(true);
+                    auri.revalidate();
                 } else {
                     JOptionPane.showMessageDialog(auri, "Senha incorreta.");
                 }
@@ -863,35 +862,32 @@ class MainFrame implements ActionListener{
         
         // Ações para o botão de adicionar livro
         } else if(e.getSource()==this.addLivroButton){
-            auri.setVisible(false);
             this.buildAddScreen();
             auri.remove(this.menuPanel);
             auri.add(this.addPanel);
-            auri.setVisible(true);
+            auri.revalidate();
         
         // Ações para o botão de cadastrar cliente
         } else if(e.getSource()==this.cdstClienteButton){
-            auri.setVisible(false);
             this.buildCdstClienteScreen();
             auri.remove(this.menuPanel);
             auri.add(this.cdstClientePanel);
-            auri.setVisible(true);
+            auri.revalidate();
         
         // Ações para o botão de cadastrar funcionário
         } else if(e.getSource()==this.cdstFuncButton){
-            auri.setVisible(false);
             this.buildCdstFuncScreen();
             auri.remove(this.menuPanel);
             auri.add(this.cdstFuncPanel);
-            auri.setVisible(true);
+            auri.revalidate();
         
         // Ações para o botão de empréstimo
         } else if(e.getSource()==this.emprestimoButton){    
-            auri.setVisible(false);
             this.buildEmprestimoScreen();
             auri.remove(this.menuPanel);
+            auri.repaint();
             auri.add(this.emprestimoPanel);
-            auri.setVisible(true);
+            auri.revalidate();
         
         } else if(e.getSource()==this.confirmaDevButton){
             String id = (String) this.emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 0);
@@ -908,11 +904,11 @@ class MainFrame implements ActionListener{
             
         // Ações para o botão de cancelar adição de livro
         } else if(e.getSource()==this.cancelaButton){
-            auri.setVisible(false);
             this.buildMenuScreen(funcionarioAtual.ehGerente());
             auri.getContentPane().removeAll();
+            auri.repaint();
             auri.add(this.menuPanel);
-            auri.setVisible(true);
+            auri.revalidate();
         
         // Ações para o botão de confirmar adição de livro
         } else if(e.getSource()==this.confirmaAddButton){
@@ -928,11 +924,11 @@ class MainFrame implements ActionListener{
                 boolean resultado = bd.adicionaLivro(titulo, autor, editora, ISBN, ano);
                 if(resultado){
                     JOptionPane.showMessageDialog(auri, "Livro adicionado ao acervo.");
-                    auri.setVisible(false);
                     this.buildMenuScreen(funcionarioAtual.ehGerente());
                     auri.getContentPane().removeAll();
+                    auri.repaint();
                     auri.add(this.menuPanel);
-                    auri.setVisible(true);
+                    auri.revalidate();
                 } else {
                     JOptionPane.showMessageDialog(auri, "Livro já se encontra no acervo.");
                 }
@@ -952,11 +948,11 @@ class MainFrame implements ActionListener{
                 boolean resultado = bd.cadastraCliente(nome, cpf, endereco, celular, data);
                 if(resultado){
                     JOptionPane.showMessageDialog(auri, "Cliente cadastrado com sucesso.");
-                    auri.setVisible(false);
                     this.buildMenuScreen(funcionarioAtual.ehGerente());
                     auri.getContentPane().removeAll();
+                    auri.repaint();
                     auri.add(this.menuPanel);
-                    auri.setVisible(true);
+                    auri.revalidate();
                 } else {
                     JOptionPane.showMessageDialog(auri, "Cliente já possui cadastro.");
                 }
@@ -978,11 +974,11 @@ class MainFrame implements ActionListener{
                 boolean resultado = bd.cadastraFuncionario(nome, cpf, endereco, celular, data, senha.getText(), cargo);
                 if(resultado){
                     JOptionPane.showMessageDialog(auri, "Funcionário cadastrado com sucesso.");
-                    auri.setVisible(false);
                     this.buildMenuScreen(funcionarioAtual.ehGerente());
                     auri.getContentPane().removeAll();
+                    auri.repaint();
                     auri.add(this.menuPanel);
-                    auri.setVisible(true);
+                    auri.revalidate();
                 } else {
                     JOptionPane.showMessageDialog(auri, "Funiconário já possui cadastro.");
                 }
@@ -1014,11 +1010,11 @@ class MainFrame implements ActionListener{
                         boolean resultado = bd.novoEmprestimo(funcionarioAtual, inputCPF.getText(), livros);
                         if(resultado){
                             JOptionPane.showMessageDialog(auri, "Empréstimo realizado com sucesso.");
-                            auri.setVisible(false);
                             this.buildMenuScreen(funcionarioAtual.ehGerente());
                             auri.getContentPane().removeAll();
+                            auri.repaint();
                             auri.add(this.menuPanel);
-                            auri.setVisible(true);
+                            auri.revalidate();
                         } else {
                             JOptionPane.showMessageDialog(auri, "Cliente não cadastrado no sistema.");
                         }
