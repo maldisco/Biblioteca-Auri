@@ -32,11 +32,28 @@ public class Livro {
         return this.ISBN;
     }
     
+    /**
+     * Registra o livro como emprestado ou não
+     * @param e 
+     */
     public void setEmprestado(boolean e){
         this.emprestado = e;
     }
     
+    /**
+     * Retorna o estado do livro (emprestado ou não)
+     * @return boolean
+     */
     public boolean getEmprestado(){
         return this.emprestado;
+    }
+    
+    /**
+     * Retorna as principais informações do livro
+     * @return String[]
+     */
+    public String[] info(){
+        String[] infos = {titulo, autor, ISBN, editora, Integer.toString(anoPublicacao)};
+        return infos;
     }
 }

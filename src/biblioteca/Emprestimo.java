@@ -33,34 +33,44 @@ public class Emprestimo {
         return id;
     }
 
+    /**
+     * Retorna a data do momento do empréstimo
+     * serve para calcular o valor
+     * @return LocalDate
+     */
     public LocalDate getData() {
         return data;
     }
 
+    /**
+     * Retorna todos os livros do empréstimo
+     * @return List
+     */
     public List<Livro> getLivros() {
         return livros;
     }
     
+    /**
+     * Registra o empréstimo como devolvido (finalizado)
+     * @param devolvido 
+     */
     public void setDevolvido(boolean devolvido) {
         this.devolvido = devolvido;
     }
     
+    /**
+     * Adiciona um livro ao empréstimo
+     * @param l 
+     */
     public void adicionarLivro(Livro l){
         if(!this.livros.contains(l)){
             this.livros.add(l);
         }
     }
     
-    public void removerLivro(int id){
-        this.livros.remove(id);
-    }
-    
-    public void zerar(){
-        this.livros.clear();
-    }
-    
+    @Override
     public String toString(){
-        List<String> listaIsbn = new ArrayList<String>();
+        List<String> listaIsbn = new ArrayList<>();
         for(Livro l: this.livros){
             listaIsbn.add(l.getISBN());
         }
@@ -68,13 +78,16 @@ public class Emprestimo {
         
         return String.join(",", Integer.toString(id), Boolean.toString(devolvido), funcionario.getCPF(), cliente.getCPF(), isbn, data.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
     }
-    
+    /**
+     * Retorna todas as principais informações do empréstimo
+     * @return String[]
+     */
     public String[] info(){
-        List<String> livros = new ArrayList<String>();
+        List<String> livrosEmprestados = new ArrayList<>();
         for(Livro l: this.livros){
-            livros.add(l.titulo);
+            livrosEmprestados.add(l.titulo);
         }
-        String nomes = String.join(", ", livros);
+        String nomes = String.join(", ", livrosEmprestados);
         String[] infos = {String.valueOf(id), this.cliente.nome, this.cliente.cpf, this.funcionario.nome, nomes};
         return infos ;
     }

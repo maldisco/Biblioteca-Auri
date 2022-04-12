@@ -64,12 +64,12 @@ public class Biblioteca {
  * Classe utilizada para implementar a interface gráfica
  */
 class MainFrame implements ActionListener{
-    private JButton loginButton, confirmaDevButton, confirmaAddButton, confirmaCdstButton, confirmaEmprstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, rmvLivroButton,
-            cdstClienteButton, cdstFuncButton;
+    private JButton loginButton, confirmaDevButton, confirmaRmvButton, confirmaAddButton, confirmaCdstButton, confirmaEmprstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, acervoButton,
+            cdstClienteButton, cdstFuncButton, editaButton;
     private final JFrame auri;
     private JLabel logo;
-    private JTable emprestimosAbertos;
-    private JPanel loginPanel, menuPanel, addPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
+    private JTable emprestimosAbertos, tabelaLivros;
+    private JPanel loginPanel, menuPanel, addPanel, acervoPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
     private JTextField login, inputTitulo, inputEditora, inputAutor, inputISBN, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo, inputLivro1,
             inputLivro2, inputLivro3, inputPesquisa;
     private JPasswordField senha;
@@ -223,10 +223,11 @@ class MainFrame implements ActionListener{
         botoes.add(addLivroButton);
         
         // Botão remover livro
-        this.rmvLivroButton = new JButton();
-        rmvLivroButton.setText("Remover Livro");
-        rmvLivroButton.setFont(new Font("Verdana", Font.BOLD, 20));
-        botoes.add(rmvLivroButton);
+        this.acervoButton = new JButton();
+        acervoButton.setText("Ver acervo");
+        acervoButton.setFont(new Font("Verdana", Font.BOLD, 20));
+        acervoButton.addActionListener(this);
+        botoes.add(acervoButton);
         
         // Botão cadastrar funcionário
         this.cdstFuncButton = new JButton();
@@ -447,6 +448,119 @@ class MainFrame implements ActionListener{
         cancelaButton.setPreferredSize(new Dimension(200, 50));
         botoes.add(cancelaButton);
         addPanel.add(botoes);
+    }
+    
+    
+    /**
+     * Constrói tabela de visualização de acervo
+     * com opções de remover e alterar
+     */
+    public void buildAcervoScreen(){
+        this.acervoPanel =  new JPanel();
+        acervoPanel.setBackground(new Color(0x123456));
+        acervoPanel.setBounds(0, 0, 1800, 1000);
+        acervoPanel.setLayout(new GridBagLayout());
+        
+        // Parametros do layout
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        
+        JLabel titulo = new JLabel("Acervo");
+        titulo.setFont(new Font("Verdana", 40, Font.BOLD));
+        titulo.setForeground(Color.BLACK);
+        c.gridx = 0;
+        c.gridy = 0;
+        acervoPanel.add(titulo);
+        
+        // Lista de empréstimos em aberto
+        JPanel acervo = new JPanel();
+        acervo.setBackground(new Color(0x123456));
+        acervo.setLayout(new BoxLayout(acervo, BoxLayout.PAGE_AXIS));
+                
+        String[] nomeColunas = {"Título", "Autor", "ISBN", "Editora", "Ano de publicação"};
+        this.model = new DefaultTableModel(nomeColunas, 0);
+        for(Livro l: bd.getAcervo()){
+            model.addRow(l.info());
+        }
+        this.tabelaLivros = new JTable(model);   
+        tabelaLivros.setRowHeight(25);
+        tabelaLivros.setDefaultEditor(Object.class, null);    // Tornar as células não editáveis          
+        this.pesquisa = new TableRowSorter<>(tabelaLivros.getModel());        
+        tabelaLivros.setRowSorter(pesquisa);
+
+        
+        this.inputPesquisa = new JTextField();
+        inputPesquisa.setPreferredSize(new Dimension(1000, 30));
+        inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
+            
+            @Override
+            public void insertUpdate(DocumentEvent e){
+                String text = inputPesquisa.getText();
+                
+                if(text.trim().length()==0){
+                    pesquisa.setRowFilter(null);
+                } else {
+                    pesquisa.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                } 
+            }
+            
+            @Override
+            public void removeUpdate(DocumentEvent e){
+                String text = inputPesquisa.getText();
+                
+                if(text.trim().length()==0){
+                    pesquisa.setRowFilter(null);
+                } else {
+                    pesquisa.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
+            
+            @Override
+            public void changedUpdate(DocumentEvent e){
+                throw new UnsupportedOperationException("Ainda não suportada.");
+            }
+        });
+        
+        JPanel botoes = new JPanel();
+        botoes.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
+        botoes.setBackground(new Color(0x123456));
+        botoes.setAlignmentX(SwingConstants.RIGHT);
+        
+        // Botão cancelar
+        this.cancelaButton = new JButton();
+        cancelaButton.setText("Voltar");
+        cancelaButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        cancelaButton.addActionListener(this);
+        cancelaButton.setPreferredSize(new Dimension(200, 50));
+        botoes.add(cancelaButton);
+        
+        // Botão remover        
+        confirmaRmvButton = new JButton();
+        confirmaRmvButton.setText("Remover");
+        confirmaRmvButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        confirmaRmvButton.addActionListener(this);
+        confirmaRmvButton.setPreferredSize(new Dimension(200, 50));
+        botoes.add(confirmaRmvButton);
+        
+            
+        // Botão editar
+        this.editaButton = new JButton();
+        editaButton.setText("Editar");
+        editaButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        editaButton.addActionListener(this);
+        editaButton.setPreferredSize(new Dimension(200, 50));
+        botoes.add(editaButton);
+        
+        acervo.add(inputPesquisa);
+        acervo.add(Box.createRigidArea(new Dimension(0, 50)));
+        acervo.add(new JScrollPane(tabelaLivros));
+        acervo.add(Box.createRigidArea(new Dimension(0, 20)));
+        acervo.add(botoes);
+        
+        c.gridx = 0;
+        c.gridy = 1;
+        c.weighty = 5;        
+        acervoPanel.add(acervo);
     }
     
     /**
@@ -867,6 +981,14 @@ class MainFrame implements ActionListener{
             auri.add(this.addPanel);
             auri.revalidate();
         
+        // Ações para o botão de ver acervo    
+        } else if(e.getSource()==this.acervoButton){
+            this.buildAcervoScreen();
+            auri.remove(this.menuPanel);
+            auri.repaint();
+            auri.add(this.acervoPanel);
+            auri.revalidate();
+            
         // Ações para o botão de cadastrar cliente
         } else if(e.getSource()==this.cdstClienteButton){
             this.buildCdstClienteScreen();

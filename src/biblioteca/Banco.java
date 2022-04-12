@@ -63,11 +63,14 @@ public class Banco {
     public List<Emprestimo> emprestimosEmAberto(){
         return historico.stream().filter(emprestimo -> emprestimo.devolvido==false).collect(Collectors.toList());
     }
-        
+    
+    public List<Livro> getAcervo(){
+        return livros;
+    }
+    
     /**
      * Adiciona um livro ao acervo, caso ele ainda não esteja.
      * @param titulo
-     * @param genero
      * @param autor
      * @param ISBN
      * @param editora
