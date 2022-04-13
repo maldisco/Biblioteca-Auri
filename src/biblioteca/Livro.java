@@ -31,6 +31,26 @@ public class Livro {
     public String getISBN(){
         return this.ISBN;
     }
+
+    public void setAnoPublicacao(int anoPublicacao) {
+        this.anoPublicacao = anoPublicacao;
+    }
+
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    public void setEditora(String editora) {
+        this.editora = editora;
+    }
+
+    public void setISBN(String ISBN) {
+        this.ISBN = ISBN;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
     
     /**
      * Registra o livro como emprestado ou não

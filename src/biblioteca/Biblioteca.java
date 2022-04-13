@@ -57,7 +57,8 @@ public class Biblioteca {
         // Execução do programa
         SwingUtilities.invokeLater(() -> {
             // O programa utilizará o objeto bd para lidar com os dados
-            MainFrame mf = new MainFrame(bd);
+            MainFrame auri = new MainFrame(bd);
+            auri.buildFrame();
         });   
         
     } 
@@ -66,13 +67,13 @@ public class Biblioteca {
 /**
  * Classe utilizada para implementar a interface gráfica
  */
-class MainFrame implements ActionListener{
-    private JButton loginButton, confirmaDevButton, rmvLivroButton, confirmaAddButton, confirmaCdstButton, confirmaEmprstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, acervoButton,
+class MainFrame extends JFrame implements ActionListener{
+    private JButton loginButton, confirmaDevButton, rmvLivroButton, confirmaAddButton, confirmaEditButton, confirmaCdstButton, confirmaEmprstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, acervoButton,
             cdstClienteButton, cdstFuncButton, editaLivroButton;
-    private final JFrame auri;
+    private JFrame editaLivro;
     private JLabel logo;
     private JTable emprestimosAbertos, tabelaLivros;
-    private JPanel loginPanel, menuPanel, addPanel, acervoPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
+    private JPanel loginPanel, menuPanel, addPanel, editPanel, acervoPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
     private JTextField login, inputTitulo, inputEditora, inputAutor, inputISBN, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo, inputLivro1,
             inputLivro2, inputLivro3, inputPesquisa;
     private JPasswordField senha;
@@ -80,6 +81,7 @@ class MainFrame implements ActionListener{
     private DefaultTableModel model;
     private final Banco bd;
     private Funcionario funcionarioAtual;
+    private Livro livroAtual;
     
     /**
      * Constrói e abre a janela de login
@@ -87,22 +89,28 @@ class MainFrame implements ActionListener{
      */
     public MainFrame(Banco bd){
         this.bd=bd;
-        this.auri = new JFrame();   // criação da frame
-        auri.setTitle("Auri");  // nome da aplicação
-        auri.addWindowListener(new WindowAdapter(){
+    }
+    
+    /**
+     * Constrói a estrutura da frame
+     */
+    public void buildFrame(){
+        this.setTitle("Auri");  // nome da aplicação
+        this.addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosing(WindowEvent e){
                 bd.guardaDados();
                 System.exit(0);
             }
         });    // fechar ao clicar no X
-        auri.setLayout(null);
-        auri.setResizable(false);   // tornar não redimensionável
-        auri.setSize(1800,1000);  // tamanho da frame
+        this.setLayout(null);
+        this.setResizable(false);   // tornar não redimensionável
+        this.setSize(1800,1000);  // tamanho da frame
+        this.setLocationRelativeTo(null);
         buildLoginScreen();
-        auri.add(loginPanel);
-        auri.setVisible(true);  // fazer a frame visível
-        auri.getContentPane().setBackground(new Color(0x123456));   // cor do background 
+        this.add(loginPanel);
+        this.setVisible(true);  // fazer a frame visível
+        this.getContentPane().setBackground(new Color(0x123456));   // cor do background 
     }
     
     /**
@@ -564,6 +572,125 @@ class MainFrame implements ActionListener{
         acervoPanel.add(acervo);
     }
     
+    public void buildEditaLivroScreen(String titulo, String autor, String ISBN, String ano, String editora){
+        this.editaLivro = new JFrame();
+        editaLivro.setSize(new Dimension(400,600));
+        editaLivro.setLocationRelativeTo(null);
+        editaLivro.setTitle("Alterar livro");
+        
+        // Painel de adição de livro
+        this.editPanel =  new JPanel();
+        editPanel.setBounds(0, 0, 400, 600);
+        editPanel.setLayout(new GridLayout(7, 1));
+        
+        // Título da página
+        JLabel label = new JLabel();
+        label.setText("Alterar livro");
+        label.setFont(new Font("Verdana", Font.BOLD, 20));
+        label.setForeground(Color.BLACK);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        editPanel.add(label);
+        
+        // Campo de título do livro (com label)
+        JPanel tituloLivro = new JPanel();
+        tituloLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        label = new JLabel();
+        label.setText("Título");
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(100, 20));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        tituloLivro.add(label);
+        inputTitulo = new JTextField(titulo);
+        inputTitulo.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputTitulo.setPreferredSize(new Dimension(200, 20));
+        tituloLivro.add(inputTitulo);
+        editPanel.add(tituloLivro);
+        
+        // Campo de autor do livro (com label)
+        JPanel autorLivro = new JPanel();
+        autorLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        label = new JLabel();
+        label.setText("Autor");
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(100, 20));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        autorLivro.add(label);
+        inputAutor = new JTextField(autor);
+        inputAutor.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputAutor.setPreferredSize(new Dimension(200, 20));
+        autorLivro.add(inputAutor);
+        editPanel.add(autorLivro);
+        
+        // Campo de editora do livro (com label)
+        JPanel editoraLivro = new JPanel();
+        editoraLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        label = new JLabel();
+        label.setText("Editora");
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(100, 20));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        editoraLivro.add(label);        
+        inputEditora = new JTextField(editora);
+        inputEditora.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputEditora.setPreferredSize(new Dimension(200, 20));
+        editoraLivro.add(inputEditora);
+        editPanel.add(editoraLivro);
+        
+        // Campo de ano de publicação do livro (com label)
+        JPanel anoLivro = new JPanel();
+        anoLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        label = new JLabel();
+        label.setText("Ano de publicação");
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(150, 20));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        anoLivro.add(label);
+        inputAno = new JFormattedTextField(new NumberFormatter());
+        inputAno.setText(ano);
+        inputAno.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputAno.setPreferredSize(new Dimension(150, 20));
+        anoLivro.add(inputAno);
+        editPanel.add(anoLivro);
+        
+        // Campo de código ISBN do livro (com label)
+        JPanel ISBNLivro = new JPanel();
+        ISBNLivro.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        label = new JLabel();
+        label.setText("ISBN");
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(100, 20));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        ISBNLivro.add(label);       
+        inputISBN = new JTextField(ISBN);
+        inputISBN.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputISBN.setPreferredSize(new Dimension(200, 20));
+        ISBNLivro.add(inputISBN);
+        editPanel.add(ISBNLivro);
+        
+        // Botão confirmar
+        JPanel botoes = new JPanel();
+        botoes.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
+        confirmaEditButton = new JButton();
+        confirmaEditButton.setText("Salvar");
+        confirmaEditButton.setFont(new Font("Verdana", Font.PLAIN, 18));
+        confirmaEditButton.addActionListener(this);
+        confirmaEditButton.setPreferredSize(new Dimension(150, 30));
+        botoes.add(confirmaEditButton);
+        
+        // Adiciona os componentes ao painel
+        editPanel.add(botoes);
+        
+        // Adiciona o painel à frame
+        editaLivro.add(editPanel);
+        // Torna a frame visível
+        editaLivro.setVisible(true);
+    }
+    
     /**
      * Constrói a tela de cadastro de cliente.
      */
@@ -965,52 +1092,52 @@ class MainFrame implements ActionListener{
                 if(f.validar(senha.getText())){
                     this.funcionarioAtual = f;
                     this.buildMenuScreen(funcionarioAtual.ehGerente());
-                    auri.remove(this.loginPanel);
-                    auri.add(this.menuPanel);
-                    auri.revalidate();
+                    this.remove(this.loginPanel);
+                    this.add(this.menuPanel);
+                    this.revalidate();
                 } else {
-                    JOptionPane.showMessageDialog(auri, "Senha incorreta.");
+                    JOptionPane.showMessageDialog(this, "Senha incorreta.");
                 }
             } else {
-                JOptionPane.showMessageDialog(auri, "Usuário não encontrado.");
+                JOptionPane.showMessageDialog(this, "Usuário não encontrado.");
             }
         
         // Ações para o botão de adicionar livro
         } else if(e.getSource()==this.addLivroButton){
             this.buildAddScreen();
-            auri.remove(this.menuPanel);
-            auri.add(this.addPanel);
-            auri.revalidate();
+            this.remove(this.menuPanel);
+            this.add(this.addPanel);
+            this.revalidate();
         
         // Ações para o botão de ver acervo    
         } else if(e.getSource()==this.acervoButton){
             this.buildAcervoScreen();
-            auri.remove(this.menuPanel);
-            auri.repaint();
-            auri.add(this.acervoPanel);
-            auri.revalidate();
+            this.remove(this.menuPanel);
+            this.repaint();
+            this.add(this.acervoPanel);
+            this.revalidate();
             
         // Ações para o botão de cadastrar cliente
         } else if(e.getSource()==this.cdstClienteButton){
             this.buildCdstClienteScreen();
-            auri.remove(this.menuPanel);
-            auri.add(this.cdstClientePanel);
-            auri.revalidate();
+            this.remove(this.menuPanel);
+            this.add(this.cdstClientePanel);
+            this.revalidate();
         
         // Ações para o botão de cadastrar funcionário
         } else if(e.getSource()==this.cdstFuncButton){
             this.buildCdstFuncScreen();
-            auri.remove(this.menuPanel);
-            auri.add(this.cdstFuncPanel);
-            auri.revalidate();
+            this.remove(this.menuPanel);
+            this.add(this.cdstFuncPanel);
+            this.revalidate();
         
         // Ações para o botão de empréstimo
         } else if(e.getSource()==this.emprestimoButton){    
             this.buildEmprestimoScreen();
-            auri.remove(this.menuPanel);
-            auri.repaint();
-            auri.add(this.emprestimoPanel);
-            auri.revalidate();
+            this.remove(this.menuPanel);
+            this.repaint();
+            this.add(this.emprestimoPanel);
+            this.revalidate();
         
         } else if(e.getSource()==this.confirmaDevButton){
             if(emprestimosAbertos.getSelectedRow()!=-1){
@@ -1026,7 +1153,7 @@ class MainFrame implements ActionListener{
                     this.model.removeRow(emprestimosAbertos.getSelectedRow());
                 }
             } else {
-                JOptionPane.showMessageDialog(auri, "Selecione um empréstimo.");
+                JOptionPane.showMessageDialog(this, "Selecione um empréstimo.");
             }
         
         // Ações para o botão de remover livro
@@ -1040,22 +1167,59 @@ class MainFrame implements ActionListener{
                     this.model.removeRow(tabelaLivros.getSelectedRow());
                 }
             } else {
-                JOptionPane.showMessageDialog(auri, "Selecione um livro.");
+                JOptionPane.showMessageDialog(this, "Selecione um livro.");
+            }
+        
+        // Ações para o botão de editar informações de um livro    
+        } else if(e.getSource()==this.editaLivroButton){
+            if(tabelaLivros.getSelectedRow()!=-1){
+                String titulo = (String) this.tabelaLivros.getValueAt(tabelaLivros.getSelectedRow(), 0);
+                String autor = (String) this.tabelaLivros.getValueAt(tabelaLivros.getSelectedRow(), 1);
+                String isbn = (String) this.tabelaLivros.getValueAt(tabelaLivros.getSelectedRow(), 2);
+                String editora = (String) this.tabelaLivros.getValueAt(tabelaLivros.getSelectedRow(), 3);
+                String ano = (String) this.tabelaLivros.getValueAt(tabelaLivros.getSelectedRow(), 4);
+                this.livroAtual = bd.getLivro(isbn);
+                this.buildEditaLivroScreen(titulo, autor, isbn, ano, editora);
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecione um livro.");
+            }
+            
+            
+        } else if(e.getSource()==this.confirmaEditButton){
+            if(inputTitulo.getText().isEmpty() || inputAutor.getText().isEmpty() || inputEditora.getText().isEmpty() ||
+                    inputISBN.getText().isEmpty() || inputAno.getText().isEmpty()){
+                JOptionPane.showMessageDialog(this.editaLivro, "Nenhuma informação pode ficar em branco");
+            } else {
+                String titulo = inputTitulo.getText();
+                String editora = inputEditora.getText();
+                String autor = inputAutor.getText();
+                String ISBN = inputISBN.getText();
+                int ano =  Integer.parseInt(inputAno.getText().replaceAll("\\.",""));
+                int input = JOptionPane.showConfirmDialog(null, "Novos dados:\nTítulo: "+titulo+"\nAutor: "+autor+"\nISBN: "+ISBN+"\nEditora: "
+                        +editora+"\nAno de publicação: "+ano+"\nConfirmar alterações?");
+                if(input==0){
+                    livroAtual.setAnoPublicacao(ano);
+                    livroAtual.setAutor(autor);
+                    livroAtual.setTitulo(titulo);
+                    livroAtual.setISBN(ISBN);
+                    livroAtual.setEditora(editora);
+                }
+                
             }
             
         // Ações para o botão de cancelar adição de livro
         } else if(e.getSource()==this.cancelaButton){
             this.buildMenuScreen(funcionarioAtual.ehGerente());
-            auri.getContentPane().removeAll();
-            auri.repaint();
-            auri.add(this.menuPanel);
-            auri.revalidate();
+            this.getContentPane().removeAll();
+            this.repaint();
+            this.add(this.menuPanel);
+            this.revalidate();
         
         // Ações para o botão de confirmar adição de livro
         } else if(e.getSource()==this.confirmaAddButton){
             if(inputTitulo.getText().isEmpty() || inputAutor.getText().isEmpty() || inputEditora.getText().isEmpty() ||
                     inputISBN.getText().isEmpty() || inputAno.getText().isEmpty()){
-                JOptionPane.showMessageDialog(auri, "Nenhuma informação pode ficar em branco");
+                JOptionPane.showMessageDialog(this, "Nenhuma informação pode ficar em branco");
             } else {
                 String titulo = inputTitulo.getText();
                 String editora = inputEditora.getText();
@@ -1064,14 +1228,14 @@ class MainFrame implements ActionListener{
                 int ano =  Integer.parseInt(inputAno.getText().replaceAll("\\.",""));  
                 boolean resultado = bd.adicionaLivro(titulo, autor, editora, ISBN, ano);
                 if(resultado){
-                    JOptionPane.showMessageDialog(auri, "Livro adicionado ao acervo.");
+                    JOptionPane.showMessageDialog(this, "Livro adicionado ao acervo.");
                     this.buildMenuScreen(funcionarioAtual.ehGerente());
-                    auri.getContentPane().removeAll();
-                    auri.repaint();
-                    auri.add(this.menuPanel);
-                    auri.revalidate();
+                    this.getContentPane().removeAll();
+                    this.repaint();
+                    this.add(this.menuPanel);
+                    this.revalidate();
                 } else {
-                    JOptionPane.showMessageDialog(auri, "Livro já se encontra no acervo.");
+                    JOptionPane.showMessageDialog(this, "Livro já se encontra no acervo.");
                 }
             }
         
@@ -1079,7 +1243,7 @@ class MainFrame implements ActionListener{
         } else if(e.getSource()==this.confirmaCdstButton){
             if(inputNome.getText().isEmpty() || inputCPF.getText().isEmpty() || inputEndereco.getText().isEmpty() ||
                     inputCelular.getText().isEmpty() || inputData.getText().isEmpty()){
-                JOptionPane.showMessageDialog(auri, "Nenhuma informação pode ficar em branco");
+                JOptionPane.showMessageDialog(this, "Nenhuma informação pode ficar em branco");
             } else {
                 String nome = inputNome.getText();
                 String cpf = inputCPF.getText();
@@ -1088,14 +1252,14 @@ class MainFrame implements ActionListener{
                 String data = inputData.getText();
                 boolean resultado = bd.cadastraCliente(nome, cpf, endereco, celular, data);
                 if(resultado){
-                    JOptionPane.showMessageDialog(auri, "Cliente cadastrado com sucesso.");
+                    JOptionPane.showMessageDialog(this, "Cliente cadastrado com sucesso.");
                     this.buildMenuScreen(funcionarioAtual.ehGerente());
-                    auri.getContentPane().removeAll();
-                    auri.repaint();
-                    auri.add(this.menuPanel);
-                    auri.revalidate();
+                    this.getContentPane().removeAll();
+                    this.repaint();
+                    this.add(this.menuPanel);
+                    this.revalidate();
                 } else {
-                    JOptionPane.showMessageDialog(auri, "Cliente já possui cadastro.");
+                    JOptionPane.showMessageDialog(this, "Cliente já possui cadastro.");
                 }
                 
             }
@@ -1104,7 +1268,7 @@ class MainFrame implements ActionListener{
         } else if(e.getSource()==this.confirmaCdstButton2){
             if(inputNome.getText().isEmpty() || inputCPF.getText().isEmpty() || inputEndereco.getText().isEmpty() ||
                     inputCelular.getText().isEmpty() || inputData.getText().isEmpty() || inputCargo.getText().isEmpty() || senha.getText().isEmpty()){
-                JOptionPane.showMessageDialog(auri, "Nenhuma informação pode ficar em branco");
+                JOptionPane.showMessageDialog(this, "Nenhuma informação pode ficar em branco");
             } else {
                 String nome = inputNome.getText();
                 String cpf = inputCPF.getText();
@@ -1114,14 +1278,14 @@ class MainFrame implements ActionListener{
                 String cargo = inputCargo.getText();
                 boolean resultado = bd.cadastraFuncionario(nome, cpf, endereco, celular, data, senha.getText(), cargo);
                 if(resultado){
-                    JOptionPane.showMessageDialog(auri, "Funcionário cadastrado com sucesso.");
+                    JOptionPane.showMessageDialog(this, "Funcionário cadastrado com sucesso.");
                     this.buildMenuScreen(funcionarioAtual.ehGerente());
-                    auri.getContentPane().removeAll();
-                    auri.repaint();
-                    auri.add(this.menuPanel);
-                    auri.revalidate();
+                    this.getContentPane().removeAll();
+                    this.repaint();
+                    this.add(this.menuPanel);
+                    this.revalidate();
                 } else {
-                    JOptionPane.showMessageDialog(auri, "Funiconário já possui cadastro.");
+                    JOptionPane.showMessageDialog(this, "Funiconário já possui cadastro.");
                 }
                 
             }
@@ -1129,9 +1293,9 @@ class MainFrame implements ActionListener{
         // Ações para botão de confirmar empréstimo
         } else if(e.getSource()==this.confirmaEmprstButton){
             if(inputCPF.getText().isEmpty()){
-                JOptionPane.showMessageDialog(auri, "O CPF não pode ficar em branco.");
+                JOptionPane.showMessageDialog(this, "O CPF não pode ficar em branco.");
             } else if(inputLivro1.getText().isEmpty() && inputLivro2.getText().isEmpty() && inputLivro3.getText().isEmpty()){
-                JOptionPane.showMessageDialog(auri, "Pelo menos 1 livro deve ser emprestado.");
+                JOptionPane.showMessageDialog(this, "Pelo menos 1 livro deve ser emprestado.");
             } else {
                 List<Livro> livros = new ArrayList<>();             
                 if(!inputLivro1.getText().isEmpty())
@@ -1145,22 +1309,22 @@ class MainFrame implements ActionListener{
                         livros.add(bd.getLivro(inputLivro3.getText()));
                 
                 if(livros.isEmpty()){
-                    JOptionPane.showMessageDialog(auri, "Nenhum livro foi encontrado.\nVerifique o ISBN.");
+                    JOptionPane.showMessageDialog(this, "Nenhum livro foi encontrado.\nVerifique o ISBN.");
                 } else {
                     if(livros.stream().allMatch(l -> l.getEmprestado()==false)){
                         boolean resultado = bd.novoEmprestimo(funcionarioAtual, inputCPF.getText(), livros);
                         if(resultado){
-                            JOptionPane.showMessageDialog(auri, "Empréstimo realizado com sucesso.");
+                            JOptionPane.showMessageDialog(this, "Empréstimo realizado com sucesso.");
                             this.buildMenuScreen(funcionarioAtual.ehGerente());
-                            auri.getContentPane().removeAll();
-                            auri.repaint();
-                            auri.add(this.menuPanel);
-                            auri.revalidate();
+                            this.getContentPane().removeAll();
+                            this.repaint();
+                            this.add(this.menuPanel);
+                            this.revalidate();
                         } else {
-                            JOptionPane.showMessageDialog(auri, "Cliente não cadastrado no sistema.");
+                            JOptionPane.showMessageDialog(this, "Cliente não cadastrado no sistema.");
                         }
                     } else{
-                        JOptionPane.showMessageDialog(auri, "Alguns dos livros consta como não-devolvido.");
+                        JOptionPane.showMessageDialog(this, "Alguns dos livros consta como não-devolvido.");
                     }                   
                 }    
             }

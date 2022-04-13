@@ -9,7 +9,7 @@ Bakemonogatari Vol.2,Nisio Isin,PlanetManga,978-85-426-2496-0,2019,true
 Bakemonogatari Vol.3,Nisio Isin,PlanetManga,978-85-426-2643-8,2019,true
 Beastars Vol.1,Paru Itagaki,PlanetManga,978-85-426-1868-6,2019,true
 Beastars Vol.2,Paru Itagaki,PlanetManga,978-85-426-2015-3,2019,true
-Beastars Vol.3,Paru Itagaki,PlanetManga,978-85-426-2261-4,2019,true
+Beastars Vol.3,Paru Itagaki,PlanetManga,978-85-426-2261-5,2020,true
 O nome do vento,Patrick Rothfuss,Arqueiro,978-85-99296-49-3,2009,true
 O temor do sábio,Patrick Rothfuss,Arqueiro,978-85-8041-032-7,2011,true
 Sapiens,Yuval Noah Harari,LPM,978-85-254-3218-6,2019,false
