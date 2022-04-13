@@ -50,10 +50,13 @@ import javax.swing.text.NumberFormatter;
 public class Biblioteca {
     
     public static void main(String[] args) {
+        // Carregamento dos dados a partir dos arquivos de texto
         Banco bd = new Banco();
         bd.carregaDados();
         
+        // Execução do programa
         SwingUtilities.invokeLater(() -> {
+            // O programa utilizará o objeto bd para lidar com os dados
             MainFrame mf = new MainFrame(bd);
         });   
         
@@ -64,8 +67,8 @@ public class Biblioteca {
  * Classe utilizada para implementar a interface gráfica
  */
 class MainFrame implements ActionListener{
-    private JButton loginButton, confirmaDevButton, confirmaRmvButton, confirmaAddButton, confirmaCdstButton, confirmaEmprstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, acervoButton,
-            cdstClienteButton, cdstFuncButton, editaButton;
+    private JButton loginButton, confirmaDevButton, rmvLivroButton, confirmaAddButton, confirmaCdstButton, confirmaEmprstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, acervoButton,
+            cdstClienteButton, cdstFuncButton, editaLivroButton;
     private final JFrame auri;
     private JLabel logo;
     private JTable emprestimosAbertos, tabelaLivros;
@@ -492,7 +495,6 @@ class MainFrame implements ActionListener{
         this.inputPesquisa = new JTextField();
         inputPesquisa.setPreferredSize(new Dimension(1000, 30));
         inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
-            
             @Override
             public void insertUpdate(DocumentEvent e){
                 String text = inputPesquisa.getText();
@@ -535,21 +537,20 @@ class MainFrame implements ActionListener{
         botoes.add(cancelaButton);
         
         // Botão remover        
-        confirmaRmvButton = new JButton();
-        confirmaRmvButton.setText("Remover");
-        confirmaRmvButton.setFont(new Font("Verdana", Font.PLAIN, 30));
-        confirmaRmvButton.addActionListener(this);
-        confirmaRmvButton.setPreferredSize(new Dimension(200, 50));
-        botoes.add(confirmaRmvButton);
+        rmvLivroButton = new JButton();
+        rmvLivroButton.setText("Remover");
+        rmvLivroButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        rmvLivroButton.addActionListener(this);
+        rmvLivroButton.setPreferredSize(new Dimension(200, 50));
+        botoes.add(rmvLivroButton);
         
-            
         // Botão editar
-        this.editaButton = new JButton();
-        editaButton.setText("Editar");
-        editaButton.setFont(new Font("Verdana", Font.PLAIN, 30));
-        editaButton.addActionListener(this);
-        editaButton.setPreferredSize(new Dimension(200, 50));
-        botoes.add(editaButton);
+        this.editaLivroButton = new JButton();
+        editaLivroButton.setText("Editar");
+        editaLivroButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        editaLivroButton.addActionListener(this);
+        editaLivroButton.setPreferredSize(new Dimension(200, 50));
+        botoes.add(editaLivroButton);
         
         acervo.add(inputPesquisa);
         acervo.add(Box.createRigidArea(new Dimension(0, 50)));
@@ -1012,16 +1013,34 @@ class MainFrame implements ActionListener{
             auri.revalidate();
         
         } else if(e.getSource()==this.confirmaDevButton){
-            String id = (String) this.emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 0);
-            Emprestimo emp = bd.getEmprestimo(Integer.parseInt(id));
-            float total = emp.getData().until(LocalDate.now(), ChronoUnit.DAYS);
-            int input = JOptionPane.showConfirmDialog(null, "Realizar devolução?\nTotal: R$ "+total);
-            if(input==0){
-                emp.setDevolvido(true);
-                for(Livro l: emp.getLivros()){
-                    l.setEmprestado(false);
+            if(emprestimosAbertos.getSelectedRow()!=-1){
+                String id = (String) this.emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 0);
+                Emprestimo emp = bd.getEmprestimo(Integer.parseInt(id));
+                float total = emp.getData().until(LocalDate.now(), ChronoUnit.DAYS);
+                int input = JOptionPane.showConfirmDialog(null, "Realizar devolução?\nTotal: R$ "+total);
+                if(input==0){
+                    emp.setDevolvido(true);
+                    for(Livro l: emp.getLivros()){
+                        l.setEmprestado(false);
+                    }
+                    this.model.removeRow(emprestimosAbertos.getSelectedRow());
                 }
-                this.model.removeRow(emprestimosAbertos.getSelectedRow());
+            } else {
+                JOptionPane.showMessageDialog(auri, "Selecione um empréstimo.");
+            }
+        
+        // Ações para o botão de remover livro
+        } else if(e.getSource()==this.rmvLivroButton){    
+            if(tabelaLivros.getSelectedRow()!=-1){
+                String isbn = (String) this.tabelaLivros.getValueAt(tabelaLivros.getSelectedRow(), 2);
+                Livro l = bd.getLivro(isbn);
+                int input = JOptionPane.showConfirmDialog(null, "Remover "+l.titulo+" do acervo?");
+                if(input==0){
+                    bd.removeLivro(isbn);
+                    this.model.removeRow(tabelaLivros.getSelectedRow());
+                }
+            } else {
+                JOptionPane.showMessageDialog(auri, "Selecione um livro.");
             }
             
         // Ações para o botão de cancelar adição de livro
