@@ -285,7 +285,7 @@ class MainFrame extends JFrame implements ActionListener{
         this.pesquisa = new TableRowSorter<>(emprestimosAbertos.getModel());        
         emprestimosAbertos.setRowSorter(pesquisa);
 
-        
+        // Barra de pesquisa
         this.inputPesquisa = new JTextField();
         inputPesquisa.setPreferredSize(new Dimension(1000, 30));
         inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
@@ -318,6 +318,7 @@ class MainFrame extends JFrame implements ActionListener{
             }
         });
         
+        // Botão de devolução
         confirmaDevButton = new JButton();
         confirmaDevButton.setText("Devolução");
         confirmaDevButton.setFont(new Font("Verdana", Font.PLAIN, 30));
@@ -499,7 +500,7 @@ class MainFrame extends JFrame implements ActionListener{
         this.pesquisa = new TableRowSorter<>(tabelaLivros.getModel());        
         tabelaLivros.setRowSorter(pesquisa);
 
-        
+        // Barra de pesquisa
         this.inputPesquisa = new JTextField();
         inputPesquisa.setPreferredSize(new Dimension(1000, 30));
         inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
@@ -1139,6 +1140,7 @@ class MainFrame extends JFrame implements ActionListener{
             this.add(this.emprestimoPanel);
             this.revalidate();
         
+        // Ações para o botão de confirmar devolução
         } else if(e.getSource()==this.confirmaDevButton){
             if(emprestimosAbertos.getSelectedRow()!=-1){
                 String id = (String) this.emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 0);
@@ -1184,7 +1186,7 @@ class MainFrame extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(this, "Selecione um livro.");
             }
             
-            
+        // Ações para botão de confirmar edição    
         } else if(e.getSource()==this.confirmaEditButton){
             if(inputTitulo.getText().isEmpty() || inputAutor.getText().isEmpty() || inputEditora.getText().isEmpty() ||
                     inputISBN.getText().isEmpty() || inputAno.getText().isEmpty()){
