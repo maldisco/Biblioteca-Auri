@@ -33,29 +33,27 @@ public class Emprestimo {
         return id;
     }
 
-    /**
-     * Retorna a data do momento do empréstimo
-     * serve para calcular o valor
-     * @return LocalDate
-     */
     public LocalDate getData() {
         return data;
     }
 
-    /**
-     * Retorna todos os livros do empréstimo
-     * @return List
-     */
     public List<Livro> getLivros() {
         return livros;
     }
     
-    /**
-     * Registra o empréstimo como devolvido (finalizado)
-     * @param devolvido 
-     */
     public void setDevolvido(boolean devolvido) {
         this.devolvido = devolvido;
+    }
+        
+    @Override
+    public String toString(){
+        List<String> listaIsbn = new ArrayList<>();
+        for(Livro l: this.livros){
+            listaIsbn.add(l.getISBN());
+        }
+        String isbn = String.join("/", listaIsbn);
+        
+        return String.join(",", Integer.toString(id), Boolean.toString(devolvido), funcionario.getCPF(), cliente.getCPF(), isbn, data.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
     }
     
     /**
@@ -68,16 +66,6 @@ public class Emprestimo {
         }
     }
     
-    @Override
-    public String toString(){
-        List<String> listaIsbn = new ArrayList<>();
-        for(Livro l: this.livros){
-            listaIsbn.add(l.getISBN());
-        }
-        String isbn = String.join("/", listaIsbn);
-        
-        return String.join(",", Integer.toString(id), Boolean.toString(devolvido), funcionario.getCPF(), cliente.getCPF(), isbn, data.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
-    }
     /**
      * Retorna todas as principais informações do empréstimo
      * @return String[]

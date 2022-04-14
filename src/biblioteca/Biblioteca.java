@@ -68,12 +68,12 @@ public class Biblioteca {
  * Classe utilizada para implementar a interface gráfica
  */
 class MainFrame extends JFrame implements ActionListener{
-    private JButton loginButton, confirmaDevButton, rmvLivroButton, confirmaAddButton, confirmaEditButton, confirmaCdstButton, confirmaEmprstButton, confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, acervoButton,
-            cdstClienteButton, cdstFuncButton, editaLivroButton;
-    private JFrame editaLivro;
+    private JButton loginButton, clientesButton, confirmaDevButton, rmvLivroButton, rmvClienteButton, confirmaAddButton, salvaLivroButton, confirmaCdstButton, confirmaEmprstButton,
+            confirmaCdstButton2, cancelaButton, addLivroButton, emprestimoButton, acervoButton, cdstClienteButton, cdstFuncButton, editaLivroButton, editaClienteButton, salvaClienteButton;
+    private JFrame editaLivro, editaCliente;
     private JLabel logo;
-    private JTable emprestimosAbertos, tabelaLivros;
-    private JPanel loginPanel, menuPanel, addPanel, editPanel, acervoPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
+    private JTable emprestimosAbertos, tabelaLivros, tabelaClientes;
+    private JPanel loginPanel, menuPanel, addPanel, editPanel, acervoPanel, clientesPanel, cdstClientePanel, cdstFuncPanel, emprestimoPanel;
     private JTextField login, inputTitulo, inputEditora, inputAutor, inputISBN, inputAno, inputNome, inputCPF, inputEndereco, inputCelular, inputData, inputCargo, inputLivro1,
             inputLivro2, inputLivro3, inputPesquisa;
     private JPasswordField senha;
@@ -82,6 +82,7 @@ class MainFrame extends JFrame implements ActionListener{
     private final Banco bd;
     private Funcionario funcionarioAtual;
     private Livro livroAtual;
+    private Cliente clienteAtual;
     
     /**
      * Constrói e abre a janela de login
@@ -233,12 +234,19 @@ class MainFrame extends JFrame implements ActionListener{
         addLivroButton.addActionListener(this);
         botoes.add(addLivroButton);
         
-        // Botão remover livro
+        // Botão ver acervo
         this.acervoButton = new JButton();
         acervoButton.setText("Ver acervo");
         acervoButton.setFont(new Font("Verdana", Font.BOLD, 20));
         acervoButton.addActionListener(this);
         botoes.add(acervoButton);
+        
+        // Botão ver clientes
+        this.clientesButton = new JButton();
+        clientesButton.setText("Ver clientes");
+        clientesButton.setFont(new Font("Verdana", Font.BOLD, 20));
+        clientesButton.addActionListener(this);
+        botoes.add(clientesButton);
         
         // Botão cadastrar funcionário
         this.cdstFuncButton = new JButton();
@@ -250,7 +258,7 @@ class MainFrame extends JFrame implements ActionListener{
         
         // Botão Emprestar livro
         this.emprestimoButton = new JButton();
-        emprestimoButton.setText("Empréstimo");
+        emprestimoButton.setText("Novo Empréstimo");
         emprestimoButton.setFont(new Font("Verdana", Font.BOLD, 20));
         emprestimoButton.addActionListener(this);
         botoes.add(emprestimoButton);
@@ -489,7 +497,7 @@ class MainFrame extends JFrame implements ActionListener{
         acervo.setBackground(new Color(0x123456));
         acervo.setLayout(new BoxLayout(acervo, BoxLayout.PAGE_AXIS));
                 
-        String[] nomeColunas = {"Título", "Autor", "ISBN", "Editora", "Ano de publicação"};
+        String[] nomeColunas = {"Título", "Autor", "ISBN", "Editora", "Ano de publicação", "Emprestado"};
         this.model = new DefaultTableModel(nomeColunas, 0);
         for(Livro l: bd.getAcervo()){
             model.addRow(l.info());
@@ -573,6 +581,116 @@ class MainFrame extends JFrame implements ActionListener{
         acervoPanel.add(acervo);
     }
     
+    /**
+     * Constrói tabela de visualização dos clientes
+     * com opções de remover e alterar
+     */
+    public void buildClientesScreen(){
+        this.clientesPanel =  new JPanel();
+        clientesPanel.setBackground(new Color(0x123456));
+        clientesPanel.setBounds(0, 0, 1800, 1000);
+        clientesPanel.setLayout(new GridBagLayout());
+        
+        // Parametros do layout
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        
+        JLabel titulo = new JLabel("Clientes");
+        titulo.setFont(new Font("Verdana", 40, Font.BOLD));
+        titulo.setForeground(Color.BLACK);
+        c.gridx = 0;
+        c.gridy = 0;
+        clientesPanel.add(titulo);
+        
+        // Lista de clientes
+        JPanel clientes = new JPanel();
+        clientes.setBackground(new Color(0x123456));
+        clientes.setLayout(new BoxLayout(clientes, BoxLayout.PAGE_AXIS));
+                
+        String[] nomeColunas = {"Nome", "CPF", "Endereço", "Celular", "Data de nascimento", "Quantidade de empréstimos"};
+        this.model = new DefaultTableModel(nomeColunas, 0);
+        for(Cliente cli: bd.getClientes()){
+            model.addRow(cli.info());
+        }
+        this.tabelaClientes = new JTable(model);   
+        tabelaClientes.setRowHeight(25);
+        tabelaClientes.setDefaultEditor(Object.class, null);    // Tornar as células não editáveis          
+        this.pesquisa = new TableRowSorter<>(tabelaClientes.getModel());        
+        tabelaClientes.setRowSorter(pesquisa);
+
+        // Barra de pesquisa
+        this.inputPesquisa = new JTextField();
+        inputPesquisa.setPreferredSize(new Dimension(1000, 30));
+        inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent e){
+                String text = inputPesquisa.getText();
+                
+                if(text.trim().length()==0){
+                    pesquisa.setRowFilter(null);
+                } else {
+                    pesquisa.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                } 
+            }
+            
+            @Override
+            public void removeUpdate(DocumentEvent e){
+                String text = inputPesquisa.getText();
+                
+                if(text.trim().length()==0){
+                    pesquisa.setRowFilter(null);
+                } else {
+                    pesquisa.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
+            
+            @Override
+            public void changedUpdate(DocumentEvent e){
+                throw new UnsupportedOperationException("Ainda não suportada.");
+            }
+        });
+        
+        JPanel botoes = new JPanel();
+        botoes.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
+        botoes.setBackground(new Color(0x123456));
+        botoes.setAlignmentX(SwingConstants.RIGHT);
+        
+        // Botão cancelar
+        this.cancelaButton = new JButton();
+        cancelaButton.setText("Voltar");
+        cancelaButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        cancelaButton.addActionListener(this);
+        cancelaButton.setPreferredSize(new Dimension(200, 50));
+        botoes.add(cancelaButton);
+        
+        // Botão remover        
+        rmvClienteButton = new JButton();
+        rmvClienteButton.setText("Remover");
+        rmvClienteButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        rmvClienteButton.addActionListener(this);
+        rmvClienteButton.setPreferredSize(new Dimension(200, 50));
+        botoes.add(rmvClienteButton);
+        
+        // Botão editar
+        this.editaClienteButton = new JButton();
+        editaClienteButton.setText("Editar");
+        editaClienteButton.setFont(new Font("Verdana", Font.PLAIN, 30));
+        editaClienteButton.addActionListener(this);
+        editaClienteButton.setPreferredSize(new Dimension(200, 50));
+        botoes.add(editaClienteButton);
+        
+        clientes.add(inputPesquisa);
+        clientes.add(Box.createRigidArea(new Dimension(0, 50)));
+        clientes.add(new JScrollPane(tabelaClientes));
+        clientes.add(Box.createRigidArea(new Dimension(0, 20)));
+        clientes.add(botoes);
+        
+        c.gridx = 0;
+        c.gridy = 1;
+        c.weighty = 5;        
+        clientesPanel.add(clientes);
+    }
+    
     public void buildEditaLivroScreen(String titulo, String autor, String ISBN, String ano, String editora){
         this.editaLivro = new JFrame();
         editaLivro.setSize(new Dimension(400,600));
@@ -586,7 +704,7 @@ class MainFrame extends JFrame implements ActionListener{
         
         // Título da página
         JLabel label = new JLabel();
-        label.setText("Alterar livro");
+        label.setText("Alterar informações do livro");
         label.setFont(new Font("Verdana", Font.BOLD, 20));
         label.setForeground(Color.BLACK);
         label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -676,12 +794,12 @@ class MainFrame extends JFrame implements ActionListener{
         // Botão confirmar
         JPanel botoes = new JPanel();
         botoes.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
-        confirmaEditButton = new JButton();
-        confirmaEditButton.setText("Salvar");
-        confirmaEditButton.setFont(new Font("Verdana", Font.PLAIN, 18));
-        confirmaEditButton.addActionListener(this);
-        confirmaEditButton.setPreferredSize(new Dimension(150, 30));
-        botoes.add(confirmaEditButton);
+        salvaLivroButton = new JButton();
+        salvaLivroButton.setText("Salvar");
+        salvaLivroButton.setFont(new Font("Verdana", Font.PLAIN, 18));
+        salvaLivroButton.addActionListener(this);
+        salvaLivroButton.setPreferredSize(new Dimension(150, 30));
+        botoes.add(salvaLivroButton);
         
         // Adiciona os componentes ao painel
         editPanel.add(botoes);
@@ -691,6 +809,126 @@ class MainFrame extends JFrame implements ActionListener{
         // Torna a frame visível
         editaLivro.setVisible(true);
     }
+    
+    public void buildEditaClienteScreen(String nome, String cpf, String endereco, String celular, String dataNascimento){
+        this.editaCliente = new JFrame();
+        editaCliente.setSize(new Dimension(400,600));
+        editaCliente.setLocationRelativeTo(null);
+        editaCliente.setTitle("Alterar cliente");
+        
+        // Painel de adição de livro
+        this.editPanel =  new JPanel();
+        editPanel.setBounds(0, 0, 400, 600);
+        editPanel.setLayout(new GridLayout(7, 1));
+        
+        // Título da página
+        JLabel label = new JLabel();
+        label.setText("Alterar informações do cliente");
+        label.setFont(new Font("Verdana", Font.BOLD, 20));
+        label.setForeground(Color.BLACK);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        editPanel.add(label);
+        
+        // Campo de nome do cliente (com label)
+        JPanel nomeCliente = new JPanel();
+        nomeCliente.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        label = new JLabel();
+        label.setText("Nome");
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(100, 20));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        nomeCliente.add(label);
+        inputNome = new JTextField(nome);
+        inputNome.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputNome.setPreferredSize(new Dimension(200, 20));
+        nomeCliente.add(inputNome);
+        editPanel.add(nomeCliente);
+        
+        // Campo de CPF do cliente (com label)
+        JPanel cpfCliente = new JPanel();
+        cpfCliente.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        label = new JLabel();
+        label.setText("CPF");
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(100, 20));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        cpfCliente.add(label);
+        inputCPF = new JTextField(cpf);
+        inputCPF.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputCPF.setPreferredSize(new Dimension(200, 20));
+        cpfCliente.add(inputCPF);
+        editPanel.add(cpfCliente);
+        
+        // Campo de endereço do cliente (com label)
+        JPanel enderecoCliente = new JPanel();
+        enderecoCliente.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        label = new JLabel();
+        label.setText("Endereço");
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(100, 20));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        enderecoCliente.add(label);        
+        inputEndereco = new JTextField(endereco);
+        inputEndereco.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputEndereco.setPreferredSize(new Dimension(200, 20));
+        enderecoCliente.add(inputEndereco);
+        editPanel.add(enderecoCliente);
+        
+        // Campo de celular do cliente (com label)
+        JPanel celularCliente = new JPanel();
+        celularCliente.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        label = new JLabel();
+        label.setText("Celular");
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(100, 20));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        celularCliente.add(label);       
+        inputCelular = new JTextField(celular);
+        inputCelular.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputCelular.setPreferredSize(new Dimension(200, 20));
+        celularCliente.add(inputCelular);
+        editPanel.add(celularCliente);
+        
+        // Campo de data de nascimento do cliente (com label)
+        JPanel dataNascimentoCliente = new JPanel();
+        dataNascimentoCliente.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        label = new JLabel();
+        label.setText("Data de nascimento");
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.BLACK);
+        label.setPreferredSize(new Dimension(150, 20));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        dataNascimentoCliente.add(label);
+        inputData = new JFormattedTextField(new NumberFormatter());
+        inputData.setText(dataNascimento);
+        inputData.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputData.setPreferredSize(new Dimension(150, 20));
+        dataNascimentoCliente.add(inputData);
+        editPanel.add(dataNascimentoCliente);
+        
+        // Botão confirmar
+        JPanel botoes = new JPanel();
+        botoes.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
+        salvaClienteButton = new JButton();
+        salvaClienteButton.setText("Salvar");
+        salvaClienteButton.setFont(new Font("Verdana", Font.PLAIN, 18));
+        salvaClienteButton.addActionListener(this);
+        salvaClienteButton.setPreferredSize(new Dimension(150, 30));
+        botoes.add(salvaClienteButton);
+        
+        // Adiciona os componentes ao painel
+        editPanel.add(botoes);
+        
+        // Adiciona o painel à frame
+        editaCliente.add(editPanel);
+        // Torna a frame visível
+        editaCliente.setVisible(true);
+    }
+
     
     /**
      * Constrói a tela de cadastro de cliente.
@@ -1117,6 +1355,14 @@ class MainFrame extends JFrame implements ActionListener{
             this.repaint();
             this.add(this.acervoPanel);
             this.revalidate();
+        
+        // Ações para o botão de ver clientes    
+        } else if(e.getSource()==this.clientesButton){
+            this.buildClientesScreen();
+            this.remove(this.menuPanel);
+            this.repaint();
+            this.add(this.clientesPanel);
+            this.revalidate();
             
         // Ações para o botão de cadastrar cliente
         } else if(e.getSource()==this.cdstClienteButton){
@@ -1144,15 +1390,29 @@ class MainFrame extends JFrame implements ActionListener{
         } else if(e.getSource()==this.confirmaDevButton){
             if(emprestimosAbertos.getSelectedRow()!=-1){
                 String id = (String) this.emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 0);
+                Cliente c = bd.getCliente((String) emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 2));
+                int qtdEmprestimos = c.getQtdEmprestimos();
                 Emprestimo emp = bd.getEmprestimo(Integer.parseInt(id));
-                float total = emp.getData().until(LocalDate.now(), ChronoUnit.DAYS);
-                int input = JOptionPane.showConfirmDialog(null, "Realizar devolução?\nTotal: R$ "+total);
-                if(input==0){
-                    emp.setDevolvido(true);
-                    for(Livro l: emp.getLivros()){
-                        l.setEmprestado(false);
+                if(qtdEmprestimos==5){
+                    int input = JOptionPane.showConfirmDialog(null, "O quinto empréstimo sai gratuitamente\nRealizar devolução?");
+                    if(input==0){
+                        emp.setDevolvido(true);
+                        c.setEmprestimoAberto(false);
+                        for(Livro l: emp.getLivros()){
+                            l.setEmprestado(false);
+                        }
+                        this.model.removeRow(emprestimosAbertos.getSelectedRow());
                     }
-                    this.model.removeRow(emprestimosAbertos.getSelectedRow());
+                } else {
+                    float total = emp.getData().until(LocalDate.now(), ChronoUnit.DAYS);
+                    int input = JOptionPane.showConfirmDialog(null, "Realizar devolução?\nTotal: R$ "+total);
+                    if(input==0){
+                        emp.setDevolvido(true);
+                        for(Livro l: emp.getLivros()){
+                            l.setEmprestado(false);
+                        }
+                        this.model.removeRow(emprestimosAbertos.getSelectedRow());
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Selecione um empréstimo.");
@@ -1163,10 +1423,14 @@ class MainFrame extends JFrame implements ActionListener{
             if(tabelaLivros.getSelectedRow()!=-1){
                 String isbn = (String) this.tabelaLivros.getValueAt(tabelaLivros.getSelectedRow(), 2);
                 Livro l = bd.getLivro(isbn);
-                int input = JOptionPane.showConfirmDialog(null, "Remover "+l.titulo+" do acervo?");
-                if(input==0){
-                    bd.removeLivro(isbn);
-                    this.model.removeRow(tabelaLivros.getSelectedRow());
+                if(l.getEmprestado()){
+                    JOptionPane.showMessageDialog(this, "Este livro não pode ser removido pois está emprestado.");
+                } else {
+                    int input = JOptionPane.showConfirmDialog(null, "Remover "+l.titulo+" do acervo?");
+                    if(input==0){
+                        bd.removeLivro(l);
+                        this.model.removeRow(tabelaLivros.getSelectedRow());
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Selecione um livro.");
@@ -1186,8 +1450,40 @@ class MainFrame extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(this, "Selecione um livro.");
             }
             
-        // Ações para botão de confirmar edição    
-        } else if(e.getSource()==this.confirmaEditButton){
+        // Ações para o botão de remover cliente
+        } else if(e.getSource()==this.rmvClienteButton){
+            if(tabelaClientes.getSelectedRow()!=-1){
+                String cpf = (String) this.tabelaClientes.getValueAt(tabelaClientes.getSelectedRow(), 1);
+                Cliente c = bd.getCliente(cpf);
+                if(c.getEmprestimoAberto()){
+                    JOptionPane.showMessageDialog(this, "Este cliente não pode ser removido pois possui empréstimo em aberto.");
+                } else {
+                    int input = JOptionPane.showConfirmDialog(null, "Remover "+c.nome+" do banco de clientes?");
+                    if(input==0){
+                        bd.removeCliente(c);
+                        this.model.removeRow(tabelaClientes.getSelectedRow());
+                    }
+                }    
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecione um cliente.");
+            }
+            
+        // Ações para o botão de editar um cliente    
+        } else if(e.getSource()==this.editaClienteButton){
+            if(tabelaClientes.getSelectedRow()!=-1){
+                String nome = (String) this.tabelaClientes.getValueAt(tabelaClientes.getSelectedRow(), 0);
+                String CPF = (String) this.tabelaClientes.getValueAt(tabelaClientes.getSelectedRow(), 1);
+                String endereco = (String) this.tabelaClientes.getValueAt(tabelaClientes.getSelectedRow(), 2);
+                String celular = (String) this.tabelaClientes.getValueAt(tabelaClientes.getSelectedRow(), 3);
+                String data = (String) this.tabelaClientes.getValueAt(tabelaClientes.getSelectedRow(), 4);
+                this.clienteAtual = bd.getCliente(CPF);
+                this.buildEditaClienteScreen(nome, CPF, endereco, celular, data);
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecione um cliente.");
+            }
+            
+        // Ações para botão de salvar alterações de um livro   
+        } else if(e.getSource()==this.salvaLivroButton){
             if(inputTitulo.getText().isEmpty() || inputAutor.getText().isEmpty() || inputEditora.getText().isEmpty() ||
                     inputISBN.getText().isEmpty() || inputAno.getText().isEmpty()){
                 JOptionPane.showMessageDialog(this.editaLivro, "Nenhuma informação pode ficar em branco");
@@ -1207,6 +1503,29 @@ class MainFrame extends JFrame implements ActionListener{
                     livroAtual.setEditora(editora);
                 }
                 
+            }
+        
+        // Ações para o botão de salvar alterações de um cliente    
+        } else if(e.getSource()==this.salvaClienteButton){
+            if(inputNome.getText().isEmpty() || inputCPF.getText().isEmpty() || inputCelular.getText().isEmpty()
+                    || inputEndereco.getText().isEmpty() || inputData.getText().isEmpty()){
+                JOptionPane.showMessageDialog(this.editaLivro, "Nenhuma informação pode ficar em branco");
+            } else {
+                String nome = inputNome.getText();
+                String CPF = inputCPF.getText();
+                String endereco = inputEndereco.getText();
+                String celular = inputCelular.getText();
+                String dataNascimento = inputData.getText();
+                
+                int input = JOptionPane.showConfirmDialog(null, "Novos dados:\nNome: "+nome+"\nCPF: "+CPF+"\nEndereço: "+endereco+"\nCelular: "
+                        +celular+"\nData de nascimento: "+dataNascimento+"\nConfirmar alterações?");
+                if(input==0){
+                    clienteAtual.setNome(nome);
+                    clienteAtual.setEndereco(endereco);
+                    clienteAtual.setCpf(CPF);
+                    clienteAtual.setCelular(celular);
+                    clienteAtual.setDataNascimento(dataNascimento);
+                }
             }
             
         // Ações para o botão de cancelar adição de livro
@@ -1314,19 +1633,24 @@ class MainFrame extends JFrame implements ActionListener{
                     JOptionPane.showMessageDialog(this, "Nenhum livro foi encontrado.\nVerifique o ISBN.");
                 } else {
                     if(livros.stream().allMatch(l -> l.getEmprestado()==false)){
-                        boolean resultado = bd.novoEmprestimo(funcionarioAtual, inputCPF.getText(), livros);
-                        if(resultado){
-                            JOptionPane.showMessageDialog(this, "Empréstimo realizado com sucesso.");
-                            this.buildMenuScreen(funcionarioAtual.ehGerente());
-                            this.getContentPane().removeAll();
-                            this.repaint();
-                            this.add(this.menuPanel);
-                            this.revalidate();
+                        Cliente cli = bd.getCliente(inputCPF.getText());
+                        if(cli!=null){
+                            if(!cli.emprestimoAberto){
+                                bd.novoEmprestimo(funcionarioAtual, cli, livros);
+                                JOptionPane.showMessageDialog(this, "Empréstimo realizado com sucesso.");
+                                this.buildMenuScreen(funcionarioAtual.ehGerente());
+                                this.getContentPane().removeAll();
+                                this.repaint();
+                                this.add(this.menuPanel);
+                                this.revalidate();
+                            } else {
+                                JOptionPane.showMessageDialog(this, "Cliente já possui empréstimo aberto.");
+                            }
                         } else {
                             JOptionPane.showMessageDialog(this, "Cliente não cadastrado no sistema.");
                         }
                     } else{
-                        JOptionPane.showMessageDialog(this, "Alguns dos livros consta como não-devolvido.");
+                        JOptionPane.showMessageDialog(this, "Algum dos livros consta como não-devolvido.");
                     }                   
                 }    
             }

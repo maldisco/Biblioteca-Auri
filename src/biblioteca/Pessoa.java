@@ -1,7 +1,8 @@
 package biblioteca;
 
 /**
- * Superclasse que representa uma pessoa
+ * Superclasse que representa uma pessoa.
+ * Contém atributos básicos de identificação e contato
  */
 public class Pessoa {
     protected String nome, cpf, endereco, celular, dataNascimento;
@@ -14,10 +15,6 @@ public class Pessoa {
         this.dataNascimento=dataNascimento;
     }
     
-    /**
-     * Retorna o CPF da pessoa
-     * @return String
-     */
     public String getCPF(){
         return this.cpf;
     }
@@ -25,6 +22,7 @@ public class Pessoa {
 
 /**
  * Subclasse da classe Pessoa, representa um funcionário
+ * Contém os atributos senha (entrar no sistema) e cargo (controlar as funções disponíveis)
  */
 class Funcionario extends Pessoa {
     private String senha, cargo;
@@ -35,10 +33,6 @@ class Funcionario extends Pessoa {
         this.cargo=cargo;
     }
     
-    /**
-     * Retorna todos os dados do funcionário
-     * @return String
-     */
     @Override
     public String toString(){
         return String.join(",", this.nome, this.cpf, this.endereco, this.celular, this.dataNascimento, this.senha, this.cargo);
@@ -64,6 +58,7 @@ class Funcionario extends Pessoa {
 
 /**
  * Subclasse da classe Pessoa, representa um cliente
+ * Contém atributos para controle de empréstimo
  */
 class Cliente extends Pessoa {
     protected boolean emprestimoAberto=false;
@@ -91,18 +86,54 @@ class Cliente extends Pessoa {
      * @param emprestimoAberto
      * @param qtdEmprestimos 
      */
-    public Cliente(String nome, String cpf, String endereco, String celular, String dataNascimento, boolean emprestimoAberto, int qtdEmprestimos){
+    public Cliente(String nome, String cpf, String endereco, String celular, String dataNascimento, int qtdEmprestimos){
         super(nome, cpf, endereco, celular, dataNascimento);
-        this.emprestimoAberto=emprestimoAberto;
         this.qtdEmprestimos=qtdEmprestimos;
     }
+
+    public int getQtdEmprestimos() {
+        return qtdEmprestimos;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+
+    public void setDataNascimento(String dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public void setCelular(String celular) {
+        this.celular = celular;
+    }
     
-    /**
-     * Retorna todos os dados do cliente
-     * @return String
-     */
+    public void setQtdEmprestimos(int qtdEmprestimos) {
+        this.qtdEmprestimos = qtdEmprestimos;
+    }
+    
+    public void setEmprestimoAberto(boolean emprestimoAberto) {
+        this.emprestimoAberto = emprestimoAberto;
+    }
+    
+    public boolean getEmprestimoAberto(){
+        return this.emprestimoAberto;
+    }
+    
     @Override
     public String toString(){
-        return String.join(",", this.nome, this.cpf, this.endereco, this.celular, this.dataNascimento, Boolean.toString(this.emprestimoAberto),Integer.toString(this.qtdEmprestimos));
+        return String.join(",", this.nome, this.cpf, this.endereco, this.celular, this.dataNascimento, Integer.toString(this.qtdEmprestimos));
+    }
+    
+    public String[] info(){
+        String[] infos = {nome, cpf, endereco, celular, dataNascimento, Integer.toString(qtdEmprestimos)};
+        return infos;
     }
 }

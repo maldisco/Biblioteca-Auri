@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 /**
  * Utilizada para gerenciar o banco de dados.
+ * Possui como atributos listas de empréstimos, livros, clientes e funcionários
  */
 public class Banco {
     private final List<Emprestimo> historico;
@@ -23,6 +24,14 @@ public class Banco {
         livros = new ArrayList<>();
         clientes = new ArrayList<>();
         funcionarios = new ArrayList<>();
+    }
+    
+    public List<Livro> getAcervo(){
+        return livros;
+    }
+    
+    public List<Cliente> getClientes(){
+        return clientes;
     }
     
     /**
@@ -52,6 +61,11 @@ public class Banco {
         return funcionarios.stream().filter(func -> CPF.equals(func.getCPF())).findFirst().orElse(null);
     }
     
+    /**
+     * Encontra um empréstimo a partir do seu ID
+     * @param id
+     * @return Emprestimo
+     */
     public Emprestimo getEmprestimo (int id) {
         return historico.stream().filter(emp -> id == emp.getId()).findFirst().orElse(null);
     }
@@ -63,11 +77,7 @@ public class Banco {
     public List<Emprestimo> emprestimosEmAberto(){
         return historico.stream().filter(emprestimo -> emprestimo.devolvido==false).collect(Collectors.toList());
     }
-    
-    public List<Livro> getAcervo(){
-        return livros;
-    }
-    
+        
     /**
      * Adiciona um livro ao acervo, caso ele ainda não esteja.
      * @param titulo
@@ -87,15 +97,10 @@ public class Banco {
     
     /**
      * Remove um livro do acervo, caso ele esteja
-     * @param ISBN
-     * @return boolean (sucesso ou falha)
+     * @param l
      */
-    public boolean removeLivro(String ISBN){
-        Livro l = getLivro(ISBN);
-        if(l==null)
-            return false;
-        livros.remove(l);
-        return true;          
+    public void removeLivro(Livro l){
+        this.livros.remove(l);
     }
     
     /**
@@ -113,6 +118,14 @@ public class Banco {
         Cliente c = new Cliente(nome, cpf, endereco, celular, dataNascimento);
         clientes.add(c);
         return true;
+    }
+    
+    /**
+     * Remove um cliente do banco
+     * @param c 
+     */
+    public void removeCliente(Cliente c){
+        this.clientes.remove(c);
     }
     
     /**
@@ -137,35 +150,16 @@ public class Banco {
     /**
      * Registra um novo empréstimo
      * @param funcionario
-     * @param cpf
+     * @param cliente
      * @param livros
-     * @return boolean (sucesso ou falha)
      */
-    public boolean novoEmprestimo(Funcionario funcionario, String cpf, List<Livro> livros){
-        if(getCliente(cpf)==null)
-            return false;
-        Cliente c = getCliente(cpf);
-        Emprestimo e = new Emprestimo(historico.size(), funcionario, c, livros);
-        historico.add(e);
-        return true;
-    }
-    
-    /**
-     * método de teste (checar se os dados estão sendo carregados corretamente
-     * EXCLUIR
-     */
-    public void mostraDados(){
-        for(Funcionario f: funcionarios){
-            System.out.println(f.toString());
-        }
-        
+    public void novoEmprestimo(Funcionario funcionario, Cliente cliente, List<Livro> livros){        
+        cliente.setEmprestimoAberto(true);
         for(Livro l: livros){
-            System.out.println(l.toString());
+            l.setEmprestado(true);
         }
-        
-        for(Cliente c: clientes){
-            System.out.println(c.toString());
-        }
+
+        historico.add(new Emprestimo(historico.size(), funcionario, cliente, livros));
     }
     
     /**
@@ -191,27 +185,39 @@ public class Banco {
             
             while(reader2.hasNextLine()){
                 String data[] = reader2.nextLine().split(",");
-                Cliente c = new Cliente(data[0], data[1], data[2], data[3], data[4], Boolean.parseBoolean(data[5]), Integer.parseInt(data[6]));
+                Cliente c = new Cliente(data[0], data[1], data[2], data[3], data[4], Integer.parseInt(data[5]));
                 clientes.add(c);
             }
             
             while(reader3.hasNextLine()){
                 String data[] = reader3.nextLine().split(",");
-                Livro l = new Livro(data[0], data[1], data[2], data[3], Integer.parseInt(data[4]), Boolean.parseBoolean(data[5]));
+                Livro l = new Livro(data[0], data[1], data[2], data[3], Integer.parseInt(data[4]));
                 livros.add(l);
             }
             
             while(reader4.hasNextLine()){
                 String data[] =  reader4.nextLine().split(",");
+                boolean devolvido = Boolean.parseBoolean(data[1]);
+                Cliente cliente = this.getCliente(data[3]);
                 String ISBNs[] = data[4].split("/");
-                List<Livro> l = new ArrayList<>();
+                
+                // livros emprestados
+                List<Livro> listaLivros = new ArrayList<>();
                 for(String isbn: ISBNs){
                     Livro livro =  getLivro(isbn);
-                    livro.setEmprestado(true);
-                    l.add(livro);
+                    // Se o empréstimo não foi devolvido, marca os livros como emprestados
+                    if(!devolvido){
+                        livro.setEmprestado(true);
+                    }                 
+                    listaLivros.add(livro);
                 }
                 
-                Emprestimo e = new Emprestimo(Integer.parseInt(data[0]), Boolean.parseBoolean(data[1]), this.getFuncionario(data[2]), this.getCliente(data[3]), l, data[5]);    
+                // Se o empréstimo não foi devolvido, marca o cliente como empréstimo aberto
+                if(!devolvido){
+                    cliente.setEmprestimoAberto(true);
+                }                
+                
+                Emprestimo e = new Emprestimo(Integer.parseInt(data[0]), devolvido, this.getFuncionario(data[2]), cliente, listaLivros, data[5]);    
                 historico.add(e);
             }
              
