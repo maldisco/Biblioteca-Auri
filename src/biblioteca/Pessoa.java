@@ -20,17 +20,58 @@ public class Pessoa {
     }
 }
 
+interface tabelavel{
+    
+    /**
+     * Método para exportar as principais informações da classe 
+     * @return String[]
+     */
+    public String[] info();
+}
+
 /**
  * Subclasse da classe Pessoa, representa um funcionário
  * Contém os atributos senha (entrar no sistema) e cargo (controlar as funções disponíveis)
  */
-class Funcionario extends Pessoa {
+class Funcionario extends Pessoa implements tabelavel{
     private String senha, cargo;
     
     public Funcionario(String nome, String cpf, String endereco, String celular, String dataNascimento, String senha, String cargo){
         super(nome, cpf, endereco, celular, dataNascimento);
         this.senha=senha;
         this.cargo=cargo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+    
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
+    }
+
+    public void setCelular(String celular) {
+        this.celular = celular;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public void setDataNascimento(String dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
     
     @Override
@@ -54,13 +95,19 @@ class Funcionario extends Pessoa {
     public boolean ehGerente(){
         return this.cargo.equals("Gerente");
     }
+    
+    @Override
+    public String[] info(){
+        String[] infos = {nome, cpf, endereco, celular, dataNascimento, cargo, senha};
+        return infos;
+    }
 }
 
 /**
  * Subclasse da classe Pessoa, representa um cliente
  * Contém atributos para controle de empréstimo
  */
-class Cliente extends Pessoa {
+class Cliente extends Pessoa implements tabelavel{
     protected boolean emprestimoAberto=false;
     protected int qtdEmprestimos=0;
     
@@ -132,8 +179,12 @@ class Cliente extends Pessoa {
         return String.join(",", this.nome, this.cpf, this.endereco, this.celular, this.dataNascimento, Integer.toString(this.qtdEmprestimos));
     }
     
+    @Override
     public String[] info(){
-        String[] infos = {nome, cpf, endereco, celular, dataNascimento, Integer.toString(qtdEmprestimos)};
+        String empAberto = (emprestimoAberto) ? "Sim" : "Não";
+        String[] infos = {nome, cpf, endereco, celular, dataNascimento, Integer.toString(qtdEmprestimos), empAberto};
         return infos;
     }
+    
+    
 }

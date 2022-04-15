@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * Utilizada para gerenciar o banco de dados.
  * Possui como atributos listas de empréstimos, livros, clientes e funcionários
  */
-public class Banco {
+class Banco {
     private final List<Emprestimo> historico;
     private final List<Livro> livros;
     private final List<Cliente> clientes;
@@ -25,13 +25,17 @@ public class Banco {
         clientes = new ArrayList<>();
         funcionarios = new ArrayList<>();
     }
-    
-    public List<Livro> getAcervo(){
+
+    public List<Livro> getLivros() {
         return livros;
     }
-    
+
     public List<Cliente> getClientes(){
         return clientes;
+    }
+
+    public List<Funcionario> getFuncionarios() {
+        return funcionarios;
     }
     
     /**
@@ -148,6 +152,14 @@ public class Banco {
     }
     
     /**
+     * Remove um funcionário do banco
+     * @param f 
+     */
+    public void removeFuncionario(Funcionario f){
+        this.funcionarios.remove(f);
+    }
+    
+    /**
      * Registra um novo empréstimo
      * @param funcionario
      * @param cliente
@@ -155,6 +167,8 @@ public class Banco {
      */
     public void novoEmprestimo(Funcionario funcionario, Cliente cliente, List<Livro> livros){        
         cliente.setEmprestimoAberto(true);
+        cliente.setQtdEmprestimos(cliente.getQtdEmprestimos()+1);
+                
         for(Livro l: livros){
             l.setEmprestado(true);
         }
@@ -231,30 +245,29 @@ public class Banco {
      */
     public void guardaDados(){
         try {
-            FileWriter funcs =  new FileWriter("data/funcionarios.txt");
-            FileWriter cli = new FileWriter("data/clientes.txt");
-            FileWriter acervo = new FileWriter("data/livros.txt");
-            FileWriter emprestimos =  new FileWriter("data/emprestimos.txt");            
-            
-            for(Funcionario f: funcionarios){
-                funcs.write(f.toString()+"\n");
+            try (FileWriter funcs = new FileWriter("data/funcionarios.txt")) {
+                for(Funcionario f: funcionarios){
+                    funcs.write(f.toString()+"\n");
+                }
             }
-            funcs.close();
             
-            for(Cliente c: clientes){
-                cli.write(c.toString()+"\n");
+            try (FileWriter cli = new FileWriter("data/clientes.txt")) {
+                for(Cliente c: clientes){
+                    cli.write(c.toString()+"\n");
+                }
             }
-            cli.close();
             
-            for(Livro l: livros){
-                acervo.write(l.toString()+"\n");
+            try (FileWriter acervo = new FileWriter("data/livros.txt")) {
+                for(Livro l: livros){
+                    acervo.write(l.toString()+"\n");
+                }
             }
-            acervo.close();
             
-            for(Emprestimo e: historico){
-                emprestimos.write(e.toString()+"\n");
+            try (FileWriter emprestimos = new FileWriter("data/emprestimos.txt")) {
+                for(Emprestimo e: historico){
+                    emprestimos.write(e.toString()+"\n");
+                }
             }
-            emprestimos.close();
             
         } catch (IOException ex) {
             Logger.getLogger(Banco.class.getName()).log(Level.SEVERE, null, ex);

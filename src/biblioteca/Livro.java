@@ -1,7 +1,7 @@
 package biblioteca;
 
 
-public class Livro {
+public class Livro implements tabelavel{
     protected String titulo, autor, ISBN, editora;
     protected int anoPublicacao;
     protected boolean emprestado=false;

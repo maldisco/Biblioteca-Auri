@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class Emprestimo {
+class Emprestimo implements tabelavel{
     protected boolean devolvido=false;
     protected Funcionario funcionario;
     protected Cliente cliente;
@@ -70,6 +70,7 @@ public class Emprestimo {
      * Retorna todas as principais informações do empréstimo
      * @return String[]
      */
+    @Override
     public String[] info(){
         List<String> livrosEmprestados = new ArrayList<>();
         for(Livro l: this.livros){
