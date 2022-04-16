@@ -4,7 +4,7 @@ package biblioteca;
  * Superclasse que representa uma pessoa.
  * Contém atributos básicos de identificação e contato
  */
-public class Pessoa {
+abstract class Pessoa {
     protected String nome, cpf, endereco, celular, dataNascimento;
     
     public Pessoa(String nome, String cpf, String endereco, String celular, String dataNascimento){
