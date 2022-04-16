@@ -20,7 +20,10 @@ public class Pessoa {
     }
 }
 
-interface tabelavel{
+/**
+ * Interface que servirá para definir que uma classe pode ser visualizada em uma JTable
+ */
+interface Tabelavel{
     
     /**
      * Método para exportar as principais informações da classe 
@@ -33,7 +36,7 @@ interface tabelavel{
  * Subclasse da classe Pessoa, representa um funcionário
  * Contém os atributos senha (entrar no sistema) e cargo (controlar as funções disponíveis)
  */
-class Funcionario extends Pessoa implements tabelavel{
+class Funcionario extends Pessoa implements Tabelavel{
     private String senha, cargo;
     
     public Funcionario(String nome, String cpf, String endereco, String celular, String dataNascimento, String senha, String cargo){
@@ -96,6 +99,10 @@ class Funcionario extends Pessoa implements tabelavel{
         return this.cargo.equals("Gerente");
     }
     
+    /**
+     * Retorna as principais informações do funcionário
+     * @return String[]
+     */
     @Override
     public String[] info(){
         String[] infos = {nome, cpf, endereco, celular, dataNascimento, cargo, senha};
@@ -107,7 +114,7 @@ class Funcionario extends Pessoa implements tabelavel{
  * Subclasse da classe Pessoa, representa um cliente
  * Contém atributos para controle de empréstimo
  */
-class Cliente extends Pessoa implements tabelavel{
+class Cliente extends Pessoa implements Tabelavel{
     protected boolean emprestimoAberto=false;
     protected int qtdEmprestimos=0;
     
@@ -179,6 +186,10 @@ class Cliente extends Pessoa implements tabelavel{
         return String.join(",", this.nome, this.cpf, this.endereco, this.celular, this.dataNascimento, Integer.toString(this.qtdEmprestimos));
     }
     
+    /**
+     * Retorna as principais informações do cliente
+     * @return String[]
+     */
     @Override
     public String[] info(){
         String empAberto = (emprestimoAberto) ? "Sim" : "Não";

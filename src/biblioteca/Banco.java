@@ -7,20 +7,19 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Utilizada para gerenciar o banco de dados.
  * Possui como atributos listas de empréstimos, livros, clientes e funcionários
  */
 class Banco {
-    private final List<Emprestimo> historico;
+    private final List<Emprestimo> emprestimos;
     private final List<Livro> livros;
     private final List<Cliente> clientes;
     private final List<Funcionario> funcionarios;
     
     public Banco(){
-        historico = new ArrayList<>();
+        emprestimos = new ArrayList<>();
         livros = new ArrayList<>();
         clientes = new ArrayList<>();
         funcionarios = new ArrayList<>();
@@ -36,6 +35,10 @@ class Banco {
 
     public List<Funcionario> getFuncionarios() {
         return funcionarios;
+    }
+    
+    public List<Emprestimo> getEmprestimos(){
+        return emprestimos;
     }
     
     /**
@@ -71,16 +74,9 @@ class Banco {
      * @return Emprestimo
      */
     public Emprestimo getEmprestimo (int id) {
-        return historico.stream().filter(emp -> id == emp.getId()).findFirst().orElse(null);
+        return emprestimos.stream().filter(emp -> id == emp.getId()).findFirst().orElse(null);
     }
     
-    /**
-     * Encontra todos os empréstimos ainda em aberto
-     * @return List
-     */
-    public List<Emprestimo> emprestimosEmAberto(){
-        return historico.stream().filter(emprestimo -> emprestimo.devolvido==false).collect(Collectors.toList());
-    }
         
     /**
      * Adiciona um livro ao acervo, caso ele ainda não esteja.
@@ -173,7 +169,7 @@ class Banco {
             l.setEmprestado(true);
         }
 
-        historico.add(new Emprestimo(historico.size(), funcionario, cliente, livros));
+        emprestimos.add(new Emprestimo(emprestimos.size(), funcionario, cliente, livros));
     }
     
     /**
@@ -183,13 +179,13 @@ class Banco {
         File funcs =  new File("data/funcionarios.txt");
         File cli = new File("data/clientes.txt");
         File liv = new File("data/livros.txt");
-        File emprestimos = new File("data/emprestimos.txt");
+        File emps = new File("data/emprestimos.txt");
         
         try {
             Scanner reader = new Scanner(funcs);
             Scanner reader2 = new Scanner(cli);
             Scanner reader3 = new Scanner(liv);
-            Scanner reader4 = new Scanner(emprestimos);
+            Scanner reader4 = new Scanner(emps);
             
             while(reader.hasNextLine()){
                 String data[] = reader.nextLine().split(",");
@@ -232,7 +228,7 @@ class Banco {
                 }                
                 
                 Emprestimo e = new Emprestimo(Integer.parseInt(data[0]), devolvido, this.getFuncionario(data[2]), cliente, listaLivros, data[5]);    
-                historico.add(e);
+                this.emprestimos.add(e);
             }
              
         } catch (FileNotFoundException ex) {
@@ -263,9 +259,9 @@ class Banco {
                 }
             }
             
-            try (FileWriter emprestimos = new FileWriter("data/emprestimos.txt")) {
-                for(Emprestimo e: historico){
-                    emprestimos.write(e.toString()+"\n");
+            try (FileWriter emps = new FileWriter("data/emprestimos.txt")) {
+                for(Emprestimo e: this.emprestimos){
+                    emps.write(e.toString()+"\n");
                 }
             }
             

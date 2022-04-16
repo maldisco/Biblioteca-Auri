@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-class Emprestimo implements tabelavel{
+class Emprestimo implements Tabelavel{
     protected boolean devolvido=false;
     protected Funcionario funcionario;
     protected Cliente cliente;
@@ -25,7 +25,7 @@ class Emprestimo implements tabelavel{
         this.devolvido = devolvido;
         this.funcionario = func;
         this.cliente = cli;
-        this.data = LocalDate.parse(data, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        this.data = LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         this.livros = livros;
     }
 
@@ -53,17 +53,7 @@ class Emprestimo implements tabelavel{
         }
         String isbn = String.join("/", listaIsbn);
         
-        return String.join(",", Integer.toString(id), Boolean.toString(devolvido), funcionario.getCPF(), cliente.getCPF(), isbn, data.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
-    }
-    
-    /**
-     * Adiciona um livro ao empréstimo
-     * @param l 
-     */
-    public void adicionarLivro(Livro l){
-        if(!this.livros.contains(l)){
-            this.livros.add(l);
-        }
+        return String.join(",", Integer.toString(id), Boolean.toString(devolvido), funcionario.getCPF(), cliente.getCPF(), isbn, data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
     }
     
     /**
@@ -77,7 +67,9 @@ class Emprestimo implements tabelavel{
             livrosEmprestados.add(l.titulo);
         }
         String nomes = String.join(", ", livrosEmprestados);
-        String[] infos = {String.valueOf(id), this.cliente.nome, this.cliente.cpf, this.funcionario.nome, nomes};
+        String emp = (devolvido) ? "Sim" : "Não";
+        
+        String[] infos = {Integer.toString(id), this.cliente.nome, this.cliente.cpf, this.funcionario.nome, nomes, data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), emp};
         return infos ;
     }
     

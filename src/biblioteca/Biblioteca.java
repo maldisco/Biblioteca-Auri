@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -248,10 +247,9 @@ class MainFrame extends JFrame implements ActionListener{
        
         // Botão acessar acervo
         this.acervoButton = new JButton();
-        acervoButton.setText("Acervo");
+        acervoButton.setText("Livros");
         acervoButton.setFont(new Font("Verdana", Font.BOLD, 30));
-        acervoButton.addActionListener(this);
-        
+        acervoButton.addActionListener(this);     
         c.insets = new Insets(50, 70, 50, 70);
         c.gridy = 1;
         c.gridx = 0;
@@ -294,16 +292,16 @@ class MainFrame extends JFrame implements ActionListener{
         emp.setBackground(new Color(0x123456));
         emp.setLayout(new BoxLayout(emp, BoxLayout.PAGE_AXIS));
                 
-        String[] nomeColunas = {"Id", "Nome do cliente", "CPF do cliente", "Nome do funcionário", "Livros emprestados"};
+        String[] nomeColunas = {"Id", "Nome do cliente", "CPF do cliente", "Nome do funcionário", "Livros emprestados", "Data de empréstimo", "Devolvido"};
         this.model = new DefaultTableModel(nomeColunas, 0);
-        for(Emprestimo ea: bd.emprestimosEmAberto()){
-            model.addRow(ea.info());
-        }
+        for(Emprestimo e: bd.getEmprestimos()){
+            model.addRow(e.info());
+        }      
         this.emprestimosAbertos = new JTable(model);
         emprestimosAbertos.getColumnModel().getColumn(0).setPreferredWidth(1);    // Tornar a coluna de Id menor
         emprestimosAbertos.getColumnModel().getColumn(4).setPreferredWidth(300);    // Tornar a coluna de livros maior
         emprestimosAbertos.setRowHeight(25);
-        emprestimosAbertos.setDefaultEditor(Object.class, null);    // Tornar as células não editáveis          
+        emprestimosAbertos.setDefaultEditor(Object.class, null);    // Tornar as células não editáveis                
         this.pesquisa = new TableRowSorter<>(emprestimosAbertos.getModel());        
         emprestimosAbertos.setRowSorter(pesquisa);
 

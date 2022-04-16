@@ -1,7 +1,7 @@
 package biblioteca;
 
 
-public class Livro implements tabelavel{
+public class Livro implements Tabelavel{
     protected String titulo, autor, ISBN, editora;
     protected int anoPublicacao;
     protected boolean emprestado=false;
@@ -55,6 +55,7 @@ public class Livro implements tabelavel{
      * Retorna as principais informações do livro
      * @return String[]
      */
+    @Override
     public String[] info(){
         String emp = (emprestado) ? "Sim" : "Não";
         String[] infos = {titulo, autor, ISBN, editora, Integer.toString(anoPublicacao), emp};
