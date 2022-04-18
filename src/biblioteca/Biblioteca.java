@@ -1670,31 +1670,37 @@ class MainFrame extends JFrame implements ActionListener{
         // Ações para o botão de confirmar devolução
         } else if(e.getSource()==this.confirmaDevButton){
             if(emprestimosAbertos.getSelectedRow()!=-1){
-                String id = (String) this.emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 0);
-                Cliente c = bd.getCliente((String) emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 2));
-                int qtdEmprestimos = c.getQtdEmprestimos();
-                Emprestimo emp = bd.getEmprestimo(Integer.parseInt(id));
-                if(qtdEmprestimos>0 && qtdEmprestimos%5==0){
-                    int input = JOptionPane.showConfirmDialog(null, "Cada quinto empréstimo sai gratuitamente :) \nRealizar devolução?");
-                    if(input==0){
-                        emp.setDevolvido(true);
-                        c.setEmprestimoAberto(false);
-                        for(Livro l: emp.getLivros()){
-                            l.setEmprestado(false);
+                String devolvido = (String) this.emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 6);
+                if(devolvido.equals("Não")){
+                    String id = (String) this.emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 0);
+                    Cliente c = bd.getCliente((String) emprestimosAbertos.getValueAt(emprestimosAbertos.getSelectedRow(), 2));
+                    int qtdEmprestimos = c.getQtdEmprestimos();
+                    Emprestimo emp = bd.getEmprestimo(Integer.parseInt(id));
+                    if(qtdEmprestimos>0 && qtdEmprestimos%5==0){
+                        int input = JOptionPane.showConfirmDialog(null, "Cada quinto empréstimo sai gratuitamente :) \nRealizar devolução?");
+                        if(input==0){
+                            emp.setDevolvido(true);
+                            c.setEmprestimoAberto(false);
+                            for(Livro l: emp.getLivros()){
+                                l.setEmprestado(false);
+                            }
+                            this.model.removeRow(emprestimosAbertos.getSelectedRow());
                         }
-                        this.model.removeRow(emprestimosAbertos.getSelectedRow());
+                    } else {
+                        float total = emp.getData().until(LocalDate.now(), ChronoUnit.DAYS);
+                        int input = JOptionPane.showConfirmDialog(null, "Realizar devolução?\nTotal: R$ "+total);
+                        if(input==0){
+                            emp.setDevolvido(true);
+                            c.setEmprestimoAberto(false);
+                            for(Livro l: emp.getLivros()){
+                                l.setEmprestado(false);
+                            } 
+                            this.model.removeRow(emprestimosAbertos.getSelectedRow());
+                            this.model.addRow(emp.info());
+                        }
                     }
                 } else {
-                    float total = emp.getData().until(LocalDate.now(), ChronoUnit.DAYS);
-                    int input = JOptionPane.showConfirmDialog(null, "Realizar devolução?\nTotal: R$ "+total);
-                    if(input==0){
-                        emp.setDevolvido(true);
-                        c.setEmprestimoAberto(false);
-                        for(Livro l: emp.getLivros()){
-                            l.setEmprestado(false);
-                        }
-                        this.model.removeRow(emprestimosAbertos.getSelectedRow());
-                    }
+                    JOptionPane.showMessageDialog(this, "Este empréstimo ja foi devolvido");
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Selecione um empréstimo.");
