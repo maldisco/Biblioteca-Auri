@@ -303,6 +303,15 @@ class Biblioteca extends JFrame implements ActionListener {
         emprestimosAbertos.setRowSorter(pesquisa);
 
         // Barra de pesquisa
+        JPanel pesquisar = new JPanel();
+        pesquisar.setBackground(new Color(0x123456));
+        pesquisar.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 0));
+        
+        JLabel label = new JLabel("Pesquisar");
+        label.setForeground(Color.WHITE);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        pesquisar.add(label);
+                
         this.inputPesquisa = new JTextField();
         inputPesquisa.setPreferredSize(new Dimension(1000, 30));
         inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
@@ -334,6 +343,8 @@ class Biblioteca extends JFrame implements ActionListener {
                 throw new UnsupportedOperationException("Ainda não suportada.");
             }
         });
+        pesquisar.add(inputPesquisa);
+        
         
         // Botão de devolução
         confirmaDevButton = new JButton();
@@ -343,7 +354,7 @@ class Biblioteca extends JFrame implements ActionListener {
         confirmaDevButton.setPreferredSize(new Dimension(200, 50));
         confirmaDevButton.setAlignmentX(SwingConstants.RIGHT);
         
-        emp.add(inputPesquisa);
+        emp.add(pesquisar);
         emp.add(Box.createRigidArea(new Dimension(0, 50)));
         emp.add(new JScrollPane(emprestimosAbertos));
         emp.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -386,9 +397,19 @@ class Biblioteca extends JFrame implements ActionListener {
         this.pesquisa = new TableRowSorter<>(tabelaLivros.getModel());        
         tabelaLivros.setRowSorter(pesquisa);
 
+        // Painel de pesquisa
+        JPanel pesquisar = new JPanel();
+        pesquisar.setBackground(new Color(0x123456));
+        pesquisar.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 0));
+        
+        JLabel label = new JLabel("Pesquisar");
+        label.setForeground(Color.WHITE);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        pesquisar.add(label);
+                
         // Barra de pesquisa
         this.inputPesquisa = new JTextField();
-        inputPesquisa.setPreferredSize(new Dimension(1000, 30));
+        inputPesquisa.setPreferredSize(new Dimension(800, 30));
         inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
             @Override
             public void insertUpdate(DocumentEvent e){
@@ -417,6 +438,7 @@ class Biblioteca extends JFrame implements ActionListener {
                 throw new UnsupportedOperationException("Ainda não suportada.");
             }
         });
+        pesquisar.add(inputPesquisa);
         
         JPanel botoes = new JPanel();
         botoes.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
@@ -455,7 +477,7 @@ class Biblioteca extends JFrame implements ActionListener {
         editaLivroButton.setPreferredSize(new Dimension(200, 50));
         botoes.add(editaLivroButton);
         
-        acervo.add(inputPesquisa);
+        acervo.add(pesquisar);
         acervo.add(Box.createRigidArea(new Dimension(0, 50)));
         acervo.add(new JScrollPane(tabelaLivros));
         acervo.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -496,10 +518,20 @@ class Biblioteca extends JFrame implements ActionListener {
         tabelaClientes.setDefaultEditor(Object.class, null);    // Tornar as células não editáveis          
         this.pesquisa = new TableRowSorter<>(tabelaClientes.getModel());        
         tabelaClientes.setRowSorter(pesquisa);
-
+        
+        // Painel de pesquisa
+        JPanel pesquisar = new JPanel();
+        pesquisar.setBackground(new Color(0x123456));
+        pesquisar.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 0));
+        
+        JLabel label = new JLabel("Pesquisar");
+        label.setForeground(Color.WHITE);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        pesquisar.add(label);
+                
         // Barra de pesquisa
         this.inputPesquisa = new JTextField();
-        inputPesquisa.setPreferredSize(new Dimension(1000, 30));
+        inputPesquisa.setPreferredSize(new Dimension(800, 30));
         inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
             @Override
             public void insertUpdate(DocumentEvent e){
@@ -528,6 +560,7 @@ class Biblioteca extends JFrame implements ActionListener {
                 throw new UnsupportedOperationException("Ainda não suportada.");
             }
         });
+        pesquisar.add(inputPesquisa);
         
         JPanel botoes = new JPanel();
         botoes.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
@@ -566,7 +599,7 @@ class Biblioteca extends JFrame implements ActionListener {
         rmvClienteButton.setPreferredSize(new Dimension(200, 50));
         botoes.add(rmvClienteButton);
   
-        clientes.add(inputPesquisa);
+        clientes.add(pesquisar);
         clientes.add(Box.createRigidArea(new Dimension(0, 50)));
         clientes.add(new JScrollPane(tabelaClientes));
         clientes.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -607,10 +640,20 @@ class Biblioteca extends JFrame implements ActionListener {
         tabelaFuncionarios.setDefaultEditor(Object.class, null);    // Tornar as células não editáveis          
         this.pesquisa = new TableRowSorter<>(tabelaFuncionarios.getModel());        
         tabelaFuncionarios.setRowSorter(pesquisa);
-
+        
+        // Painel de pesquisa
+        JPanel pesquisar = new JPanel();
+        pesquisar.setBackground(new Color(0x123456));
+        pesquisar.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 0));
+        
+        JLabel label = new JLabel("Pesquisar");
+        label.setForeground(Color.WHITE);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        pesquisar.add(label);
+                
         // Barra de pesquisa
         this.inputPesquisa = new JTextField();
-        inputPesquisa.setPreferredSize(new Dimension(1000, 30));
+        inputPesquisa.setPreferredSize(new Dimension(800, 30));
         inputPesquisa.getDocument().addDocumentListener(new DocumentListener(){
             @Override
             public void insertUpdate(DocumentEvent e){
@@ -639,6 +682,8 @@ class Biblioteca extends JFrame implements ActionListener {
                 throw new UnsupportedOperationException("Ainda não suportada.");
             }
         });
+        pesquisar.add(inputPesquisa);
+        
         
         JPanel botoes = new JPanel();
         botoes.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
@@ -677,7 +722,7 @@ class Biblioteca extends JFrame implements ActionListener {
         rmvFuncionarioButton.setPreferredSize(new Dimension(200, 50));
         botoes.add(rmvFuncionarioButton);
 
-        funcionarios.add(inputPesquisa);
+        funcionarios.add(pesquisar);
         funcionarios.add(Box.createRigidArea(new Dimension(0, 50)));
         funcionarios.add(new JScrollPane(tabelaFuncionarios));
         funcionarios.add(Box.createRigidArea(new Dimension(0, 20)));
