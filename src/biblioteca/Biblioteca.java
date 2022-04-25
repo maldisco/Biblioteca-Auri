@@ -102,6 +102,8 @@ class Biblioteca extends JFrame implements ActionListener {
         this.setResizable(false);   // tornar não redimensionável
         this.setSize(1800,1000);  // tamanho da frame
         this.setLocationRelativeTo(null);
+        ImageIcon img = new ImageIcon("resources/auri-logo.png");
+        this.setIconImage(img.getImage());
         buildLoginScreen();
         this.add(loginPanel);
         this.setVisible(true);  // fazer a frame visível
@@ -204,7 +206,8 @@ class Biblioteca extends JFrame implements ActionListener {
      * Constrói a janela de Menu, bloqueia algumas funções caso usuário não seja gerente
      * @param ehGerente 
      */
-    public void buildMenuScreen(boolean ehGerente){        
+    public void buildMenuScreen(boolean ehGerente){
+        this.setTitle("Menu");
         // Painel de menu
         this.menuPanel = new JPanel();
         menuPanel.setBackground(new Color(0x123456));
@@ -357,6 +360,7 @@ class Biblioteca extends JFrame implements ActionListener {
      * com opções de remover e alterar
      */
     public void buildAcervoScreen(){
+        this.setTitle("Acervo");
         this.acervoPanel =  new JPanel();
         acervoPanel.setBackground(new Color(0x123456));
         acervoPanel.setBounds(0, 0, 1800, 1000);
@@ -467,6 +471,7 @@ class Biblioteca extends JFrame implements ActionListener {
      * com opções de remover e alterar
      */
     public void buildClientesScreen(){
+        this.setTitle("Clientes");
         this.clientesPanel =  new JPanel();
         clientesPanel.setBackground(new Color(0x123456));
         clientesPanel.setBounds(0, 0, 1800, 1000);
@@ -577,6 +582,7 @@ class Biblioteca extends JFrame implements ActionListener {
      * com opções de remover e alterar
      */
     public void buildFuncionariosScreen(){
+        this.setTitle("Funcionários");
         this.funcionariosPanel =  new JPanel();
         funcionariosPanel.setBackground(new Color(0x123456));
         funcionariosPanel.setBounds(0, 0, 1800, 1000);
@@ -1489,6 +1495,7 @@ class Biblioteca extends JFrame implements ActionListener {
      * Constrói a tela de empréstimo.
      */
     public void buildEmprestimoScreen(){
+        this.setTitle("Empréstimo");
         // Painel de empréstimo
         this.emprestimoPanel =  new JPanel();
         emprestimoPanel.setBackground(new Color(0x123456));
@@ -1903,6 +1910,8 @@ class Biblioteca extends JFrame implements ActionListener {
                 Funcionario f = bd.getFuncionario(cpf);
                 if(bd.getFuncionarios().isEmpty()){
                     JOptionPane.showMessageDialog(this, "Pelo menos 1 (um) funcionário deve ficar cadastrado.");
+                } else if (f==funcionarioAtual){
+                    JOptionPane.showMessageDialog(this, "Não é possível remover a conta atualmente logada no sistema.");
                 } else {
                     int input = JOptionPane.showConfirmDialog(null, "Remover "+f.nome+" do banco de funcionários?");
                     if(input==0){
