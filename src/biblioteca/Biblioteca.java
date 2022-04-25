@@ -46,27 +46,7 @@ import javax.swing.text.NumberFormatter;
 /**
  * Classe principal, contém o método main
  */
-public class Biblioteca {
-    
-    public static void main(String[] args) {
-        // Carregamento dos dados a partir dos arquivos de texto
-        Banco bd = new Banco();
-        bd.carregaDados();
-        
-        // Execução do programa
-        SwingUtilities.invokeLater(() -> {
-            // O programa utilizará o objeto bd para lidar com os dados
-            MainFrame auri = new MainFrame(bd);
-            auri.buildFrame();
-        });   
-        
-    } 
-}
-
-/**
- * Classe utilizada para implementar a interface gráfica
- */
-class MainFrame extends JFrame implements ActionListener{
+class Biblioteca extends JFrame implements ActionListener {
     private JButton loginButton, logoutButton, clientesButton, funcionariosButton, confirmaDevButton, rmvLivroButton, rmvClienteButton, rmvFuncionarioButton, salvaLivroButton,
             confirmaCdstClienteButton, confirmaEmprestimoButton, confirmaCdstFuncionarioButton, confirmaAddLivroButton, cancelaButton, addLivroButton, emprestimoButton, acervoButton,
             cdstClienteButton, cdstFuncionarioButton, editaLivroButton, editaClienteButton, editaFuncionarioButton, salvaClienteButton, salvaFuncionarioButton;
@@ -85,12 +65,26 @@ class MainFrame extends JFrame implements ActionListener{
     private Cliente clienteAlterado;
     
     /**
-     * Constrói e abre a janela de login
+     * Método construtor
      * @param bd 
      */
-    public MainFrame(Banco bd){
+    public Biblioteca(Banco bd){
         this.bd=bd;
     }
+    
+    public static void main(String[] args) {
+        // Carregamento dos dados a partir dos arquivos de texto
+        Banco bd = new Banco();
+        bd.carregaDados();
+        
+        // Execução do programa
+        SwingUtilities.invokeLater(() -> {
+            // O programa utilizará o objeto bd para lidar com os dados
+            Biblioteca auri = new Biblioteca(bd);
+            auri.buildFrame();
+        });   
+        
+    } 
     
     /**
      * Constrói a estrutura da frame
@@ -2007,4 +2001,5 @@ class MainFrame extends JFrame implements ActionListener{
             }
         }
     }
+    
 }
